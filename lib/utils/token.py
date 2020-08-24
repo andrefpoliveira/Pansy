@@ -2,16 +2,19 @@
 # TOKENS
 #######################################
 
-T_INT		= 'INT'
-T_FLOAT    = 'FLOAT'
-T_PLUS     = 'PLUS'
-T_MINUS    = 'MINUS'
-T_MUL      = 'MUL'
-T_DIV      = 'DIV'
-T_POW	   = 'POW'
-T_LPAREN   = 'LPAREN'
-T_RPAREN   = 'RPAREN'
-T_EOF	    = 'EOF'
+T_INT	   		= 'INT'
+T_FLOAT    		= 'FLOAT'
+T_IDENTIFIER	= 'IDENTIFIER'
+T_KEYWORD 		= 'KEYWORD'
+T_PLUS     		= 'PLUS'
+T_MINUS    		= 'MINUS'
+T_MUL      		= 'MUL'
+T_DIV      		= 'DIV'
+T_POW	   		= 'POW'
+T_EQ			= 'EQ'
+T_LPAREN   		= 'LPAREN'
+T_RPAREN   		= 'RPAREN'
+T_EOF	   		= 'EOF'
 
 class Token:
 	def __init__(self, type_, value=None, pos_start=None, pos_end=None):
@@ -29,3 +32,6 @@ class Token:
 	def __repr__(self):
 		if self.value: return f'{self.type}:{self.value}'
 		return f'{self.type}'
+
+	def matches(self, type_, value):
+		return self.type == type_ and self.value == value

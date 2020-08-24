@@ -1,6 +1,9 @@
 from lib import errors, strings_with_arrows, lexer, parser, interpreter
 from lib.utils import token, nodes
 
+global_symbol_table = interpreter.SymbolTable()
+global_symbol_table.set('null', interpreter.Number(0))
+
 #####################
 # RUN
 #####################
@@ -17,6 +20,7 @@ def run(fn, text):
 
 	inter = interpreter.Interpreter()
 	context = interpreter.Context('<program>')
+	context.symbol_table = global_symbol_table
 	result = inter.visit(ast.node, context)
 
 	return result.value, result.error
