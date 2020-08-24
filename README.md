@@ -1,6 +1,6 @@
 # Pancy
 
-My own programming language
+My own programming language. It's under development :wink:
 
 Index
 =====
