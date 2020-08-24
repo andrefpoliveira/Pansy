@@ -8,6 +8,7 @@ Index
 * [Features](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#features)
   * [Primitive Data Types](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#primitive-data-types)
   * [Operators](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#operators)
+  * [Variables](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#variables)
 
 Getting Started
 ===============
@@ -79,4 +80,11 @@ Pancy > 6 + 2 * 2
 
 Pancy > (6 + 2) * 2
 16
+```
+
+Variables
+=========
+You can store values on variables following the syntax:
+```
+Pancy > var x = 10
 ```
