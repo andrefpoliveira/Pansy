@@ -45,7 +45,7 @@ Pancy currently supports the following data type:
 * ```Integer```
 * ```Float```
 ### Operators
-Pancy currently supports the following operations: ```Sum```, ```Subtraction```, ```Multiplication```, ```Division```  
+Pancy currently supports the following operations: ```Sum```, ```Subtraction```, ```Multiplication```, ```Division``` and ```Power```  
 Respects the priority of the operators and recognizes the usage of the left and right parenteses (```(``` and ```)```)
 #### Sum
 ```
@@ -66,6 +66,11 @@ Pancy > 1 * 3
 ```
 Pancy > 10 / 2
 5.0
+```
+#### Power
+```
+Pancy > 3 ^ 2
+9
 ```
 #### More complex operations
 ```
