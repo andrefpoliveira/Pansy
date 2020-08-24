@@ -29,14 +29,14 @@ python shell.py
 You should see something like the following:
 
 ```
-Pancy > 
+Pancy> 
 ```
 
 Now you can start using using my language :smile:
 
 To close the shell program you just have to send a ```q```:
 ```
-Pancy > q
+Pancy> exit
 ```
 
 Features
@@ -50,35 +50,35 @@ Pancy currently supports the following operations: ```Sum```, ```Subtraction```,
 Respects the priority of the operators and recognizes the usage of the left and right parenteses (```(``` and ```)```)
 #### Sum
 ```
-Pancy > 5 + 3
+Pancy> 5 + 3
 8
 ```
 #### Subtraction
 ```
-Pancy > 7 - 5
+Pancy> 7 - 5
 2
 ```
 #### Multiplication
 ```
-Pancy > 1 * 3
+Pancy> 1 * 3
 3
 ```
 #### Division
 ```
-Pancy > 10 / 2
+Pancy> 10 / 2
 5.0
 ```
 #### Power
 ```
-Pancy > 3 ^ 2
+Pancy> 3 ^ 2
 9
 ```
 #### More complex operations
 ```
-Pancy > 6 + 2 * 2
+Pancy> 6 + 2 * 2
 10
 
-Pancy > (6 + 2) * 2
+Pancy> (6 + 2) * 2
 16
 ```
 
@@ -86,5 +86,5 @@ Variables
 =========
 You can store values on variables following the syntax:
 ```
-Pancy > var x = 10
+Pancy> var x = 10
 ```

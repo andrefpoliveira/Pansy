@@ -1,10 +1,10 @@
 from lib import pansy
 
 while True:
-    text = input('Pancy > ')
+    text = input('Pancy> ')
 
-    if text == "q": break
-    
+    if text == "exit": break
+
     result, error = pansy.run('<stdin>', text)
 
     if error: print(error.as_string())
