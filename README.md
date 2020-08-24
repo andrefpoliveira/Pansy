@@ -33,6 +33,11 @@ Pancy >
 
 Now you can start using using my language :smile:
 
+To close the shell program you just have to send a ```q```:
+```
+Pancy > q
+```
+
 Features
 ==========
 ### Primitive Data Types
