@@ -2,6 +2,13 @@
 
 My own programming language
 
+Index
+=====
+* [Getting Started](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#getting-started)
+* [Features](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#features)
+  * [Primitive Data Types](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#primitive-data-types)
+  * [Operations](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#operations)
+
 Getting Started
 ===============
 To run this language you must have ```Python 3.7+``` installed.  
