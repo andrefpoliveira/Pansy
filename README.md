@@ -4,14 +4,14 @@ My own programming language
 
 Getting Started
 ===============
-To run this language you must have ```Python 3.7+``` installed  
+To run this language you must have ```Python 3.7+``` installed.  
 To check your python version, open the Command Line and type:
 
 ```
 python --version
 ```
 
-Clone this repository and open the Command Line inside the folder  
+Clone this repository and open the Command Line inside the folder.  
 Now you can start the Pancy Shell by typing the command:  
 
 ```
