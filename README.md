@@ -7,7 +7,7 @@ Index
 * [Getting Started](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#getting-started)
 * [Features](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#features)
   * [Primitive Data Types](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#primitive-data-types)
-  * [Operations](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#operations)
+  * [Operators](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#operators)
 
 Getting Started
 ===============
@@ -39,8 +39,9 @@ Features
 Pancy currently supports the following data type:
 * ```Integer```
 * ```Float```
-### Operations
-Pancy currently supports the following operations: ```Sum```, ```Subtraction```, ```Multiplication```, ```Division```
+### Operators
+Pancy currently supports the following operations: ```Sum```, ```Subtraction```, ```Multiplication```, ```Division```  
+Respects the priority of the operators and recognizes the usage of the left and right parenteses (```(``` and ```)```)
 #### Sum
 ```
 Pancy > 5 + 3
@@ -60,4 +61,12 @@ Pancy > 1 * 3
 ```
 Pancy > 10 / 2
 5.0
+```
+#### More complex operations
+```
+Pancy > 6 + 2 * 2
+10
+
+Pancy > (6 + 2) * 2
+16
 ```
