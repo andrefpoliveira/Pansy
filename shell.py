@@ -1,7 +1,7 @@
 from lib import pansy
 
 while True:
-    text = input('Pancy> ')
+    text = input('Pansy> ')
 
     if text == "exit": break
 
