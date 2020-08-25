@@ -7,7 +7,10 @@ LETTERS			= string.ascii_letters
 LETTERS_DIGITS	= LETTERS + DIGITS
 
 KEYWORDS = [
-	'var'
+	'var',
+	'and',
+	'or',
+	'not'
 ]
 
 #######################################
@@ -46,13 +49,9 @@ class Lexer:
 				tokens.append(token.Token(token.T_MUL, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == '/':
-				tokens.append(token.Token(token.T_DIV, pos_start=self.pos))
-				self.advance()
+				tokens.append(self.make_divisions())
 			elif self.current_char == '^':
 				tokens.append(token.Token(token.T_POW, pos_start=self.pos))
-				self.advance()
-			elif self.current_char == '=':
-				tokens.append(token.Token(token.T_EQ, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == '(':
 				tokens.append(token.Token(token.T_LPAREN, pos_start=self.pos))
@@ -60,6 +59,16 @@ class Lexer:
 			elif self.current_char == ')':
 				tokens.append(token.Token(token.T_RPAREN, pos_start=self.pos))
 				self.advance()
+			elif self.current_char == '!':
+				tok, error = self.make_not_equals()
+				if error: return [], error
+				tokens.append(tok)
+			elif self.current_char == '=':
+				tokens.append(self.make_equals())
+			elif self.current_char == '<':
+				tokens.append(self.make_less_than())
+			elif self.current_char == '>':
+				tokens.append(self.make_greater_than())
 			else:
 				pos_start = self.pos.copy()
 				char = self.current_char
@@ -98,3 +107,59 @@ class Lexer:
 
 		tok_type = token.T_KEYWORD if id_str in KEYWORDS else token.T_IDENTIFIER
 		return token.Token(tok_type, id_str, pos_start, self.pos)
+
+	def make_not_equals(self):
+		pos_start = self.pos.copy()
+		self.advance()
+
+		if self.current_char == '=':
+			self.advance()
+			return token.Token(token.T_NE, pos_start=pos_start, pos_end=self.pos), None
+
+		self.advance()
+		return None, errors.ExpectedCharError(pos_start, self.pos,
+		"Expected '=' after '!'")
+
+	def make_equals(self):
+		tok_type = token.T_EQ
+		pos_start = self.pos.copy()
+		self.advance()
+
+		if self.current_char == '=':
+			self.advance()
+			tok_type = token.T_EE
+
+		return token.Token(tok_type, pos_start=pos_start, pos_end=self.pos)
+
+	def make_less_than(self):
+		tok_type = token.T_LT
+		pos_start = self.pos.copy()
+		self.advance()
+
+		if self.current_char == '=':
+			self.advance()
+			tok_type = token.T_LTE
+
+		return token.Token(tok_type, pos_start=pos_start, pos_end=self.pos)
+
+	def make_greater_than(self):
+		tok_type = token.T_GT
+		pos_start = self.pos.copy()
+		self.advance()
+
+		if self.current_char == '=':
+			self.advance()
+			tok_type = token.T_GTE
+
+		return token.Token(tok_type, pos_start=pos_start, pos_end=self.pos)
+
+	def make_divisions(self):
+		tok_type = token.T_DIV
+		pos_start = self.pos.copy()
+		self.advance()
+
+		if self.current_char == '/':
+			self.advance()
+			tok_type = token.T_INT_DIV
+
+		return token.Token(tok_type, pos_start=pos_start, pos_end=self.pos)

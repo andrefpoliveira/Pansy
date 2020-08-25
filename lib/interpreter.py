@@ -64,9 +64,55 @@ class Number:
 
 			return Number(self.value / other.value).set_context(self.context), None
 
+	def int_dived_by(self, other):
+		if isinstance(other, Number):
+			if other.value == 0:
+				return None, errors.RTError(
+					other.pos_start, other.pos_end,
+					'Division by zero',
+					self.context
+				)
+
+			return Number(self.value // other.value).set_context(self.context), None
+
 	def powed_by(self, other):
 		if isinstance(other, Number):
 			return Number(self.value ** other.value).set_context(self.context), None
+
+	def get_comp_ee(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value == other.value)).set_context(self.context), None
+
+	def get_comp_ne(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value != other.value)).set_context(self.context), None
+
+	def get_comp_lt(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value < other.value)).set_context(self.context), None
+
+	def get_comp_gt(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value > other.value)).set_context(self.context), None
+
+	def get_comp_lte(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value <= other.value)).set_context(self.context), None
+
+	def get_comp_gte(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value >= other.value)).set_context(self.context), None
+
+	def and_with(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value and other.value)).set_context(self.context), None
+
+	def or_with(self, other):
+		if isinstance(other, Number):
+			return Number(int(self.value or other.value)).set_context(self.context), None
+
+	def notted(self):
+		return Number(1 if self.value == 0 else 0).set_context(self.context), None
 
 	def copy(self):
 		copy = Number(self.value)
@@ -168,8 +214,26 @@ class Interpreter:
 			result, error = left.multed_by(right)
 		elif node.op_tok.type == token.T_DIV:
 			result, error = left.dived_by(right)
+		elif node.op_tok.type == token.T_INT_DIV:
+			result, error = left.int_dived_by(right)
 		elif node.op_tok.type == token.T_POW:
 			result, error = left.powed_by(right)
+		elif node.op_tok.type == token.T_EE:
+			result, error = left.get_comp_ee(right)
+		elif node.op_tok.type == token.T_NE:
+			result, error = left.get_comp_ne(right)
+		elif node.op_tok.type == token.T_LT:
+			result, error = left.get_comp_lt(right)
+		elif node.op_tok.type == token.T_GT:
+			result, error = left.get_comp_gt(right)
+		elif node.op_tok.type == token.T_LTE:
+			result, error = left.get_comp_lte(right)
+		elif node.op_tok.type == token.T_GTE:
+			result, error = left.get_comp_gte(right)
+		elif node.op_tok.matches(token.T_KEYWORD, 'and'):
+			result, error = left.and_with(right)
+		elif node.op_tok.matches(token.T_KEYWORD, 'or'):
+			result, error = left.or_with(right)
 
 		if error:
 			return res.failure(error)
@@ -185,6 +249,8 @@ class Interpreter:
 
 		if node.op_tok.type == token.T_MINUS:
 			number, error = number.multed_by(Number(-1))
+		if node.op_tok.matches(token.T_KEYWORD, 'not'):
+			number, error = number.notted()
 
 		if error:
 			return res.failure(error)
