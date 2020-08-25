@@ -8,6 +8,7 @@ Index
 * [Features](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#features)
   * [Primitive Data Types](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#primitive-data-types)
   * [Operators](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#operators)
+  * [Comparators](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#comparators)
   * [Variables](https://github.com/andrefpoliveira/Pancy/blob/master/README.md#variables)
 
 Getting Started
@@ -45,9 +46,11 @@ Features
 Pancy currently supports the following data type:
 * ```Integer```
 * ```Float```
+
 ### Operators
-Pancy currently supports the following operations: ```Sum```, ```Subtraction```, ```Multiplication```, ```Division``` and ```Power```  
+Pancy currently supports the following operations: ```Sum```, ```Subtraction```, ```Multiplication```, ```Division```, ```Int Division``` and ```Power```  
 Respects the priority of the operators and recognizes the usage of the left and right parenteses (```(``` and ```)```)
+
 #### Sum
 ```
 Pancy> 5 + 3
@@ -68,6 +71,11 @@ Pancy> 1 * 3
 Pancy> 10 / 2
 5.0
 ```
+#### Int Division
+```
+Pancy> 5 // 2
+2
+```
 #### Power
 ```
 Pancy> 3 ^ 2
@@ -82,10 +90,61 @@ Pancy> (6 + 2) * 2
 16
 ```
 
+### Comparators
+Pancy supports comparasions: ```Equal```, ```Not Equal```, ```Less than```, ```Greater than```, ```Less than or Equal```, ```Greater than or Equal```, ```And```, ```Or``` and ```Not```  
+
+```True = 1``` and ```False = 0```
+#### Equal
+```
+Pancy> 5 == 5
+1
+```
+#### Not Equal
+```
+Pancy> 5 != 5
+0
+```
+#### Less than
+```
+Pancy> 5 < 5
+0
+```
+#### Greater than
+```
+Pancy> 5 > 2
+1
+```
+#### Less than or Equal
+```
+Pancy> 5 <= 5
+1
+```
+#### Greater than or Equal
+```
+Pancy> 5 >= 6
+0
+```
+#### And
+```
+Pancy> 1 == 1 and 2 == 2
+1
+```
+#### Or
+```
+Pancy> 1 != 1 or 2 != 2
+0
+```
+#### Not
+```
+Pancy> not 1 == 1
+0
+```
+
 Variables
 =========
 You can store values on variables following the syntax:
 ```
-Pancy> var x = 10
-Pancy> var y = 5.0
+Pancy> var x = 10        # Stores 10
+Pancy> var y = 5.0       # Stores 5.0
+Pancy> var c = 1==1      # Stores 1
 ```
