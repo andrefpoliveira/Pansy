@@ -87,4 +87,5 @@ Variables
 You can store values on variables following the syntax:
 ```
 Pancy> var x = 10
+Pancy> var y = 5.0
 ```
