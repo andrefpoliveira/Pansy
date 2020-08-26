@@ -162,4 +162,6 @@ Pansy> if 2 == 1 then 123 else 249
 
 Pansy> if 2 == 0 then 1 elif 2 == 2 then 2 else 3
 2
+
+Pansy> if 2 == 0 then 123
 ```
