@@ -10,6 +10,7 @@ Index
   * [Operators](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#operators)
   * [Comparators](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#comparators)
   * [Variables](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#variables)
+  * [If Statements](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#if-statements)
 
 Getting Started
 ===============
@@ -147,4 +148,18 @@ You can store values on variables following the syntax:
 Pansy> var x = 10        # Stores 10
 Pansy> var y = 5.0       # Stores 5.0
 Pansy> var c = 1==1      # Stores 1
+```
+
+If Statements
+=============
+Pansy currently supports one liner if conditions:
+```
+Pansy> if 2 == 2 then 101
+101
+
+Pansy> if 2 == 1 then 123 else 249
+249
+
+Pansy> if 2 == 0 then 1 elif 2 == 2 then 2 else 3
+2
 ```

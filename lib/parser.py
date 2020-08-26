@@ -83,6 +83,10 @@ class Parser:
 					self.current_tok.pos_start, self.current_tok.pos_end,
 					"Expected ')'"
 				))
+		elif tok.matches(token.T_KEYWORD, 'if'):
+			if_expr = res.register(self.if_expr())
+			if res.error: return res
+			return res.success(if_expr)
 
 		return res.failure(errors.InvalidSyntaxError(
 			tok.pos_start, tok.pos_end,
@@ -173,6 +177,69 @@ class Parser:
 			))
 
 		return res.success(node)
+
+	def if_expr(self):
+		res = ParseResult()
+		cases = []
+		else_case = None
+
+		if not self.current_tok.matches(token.T_KEYWORD, 'if'):
+			return res.failure(errors.InvalidSyntaxError(
+				self.current_tok.pos_start, self.current_tok.pos_end,
+				f"Expected 'if"
+			))
+
+		res.register_advancement()
+		self.advance()
+
+		condition = res.register(self.expr())
+		if res.error: return res
+
+		if not self.current_tok.matches(token.T_KEYWORD, 'then'):
+			return res.failure(errors.InvalidSyntaxError(
+				self.current_tok.pos_start, self.current_tok.pos_end,
+				f"Expected 'then"
+			))
+
+		res.register_advancement()
+		self.advance()
+
+		expr = res.register(self.expr())
+		if res.error: return res
+		cases.append((condition, expr))
+
+		while self.current_tok.matches(token.T_KEYWORD, 'elif'):
+			res.register_advancement()
+			self.advance()
+
+			condition = res.register(self.expr())
+			if res.error: return res
+
+			if not self.current_tok.matches(token.T_KEYWORD, 'then'):
+				if not self.current_tok.matches(token.T_KEYWORD, 'then'):
+					return res.failure(errors.InvalidSyntaxError(
+						self.current_tok.pos_start, self.current_tok.pos_end,
+						f"Expected 'then"
+					))
+
+			res.register_advancement()
+			self.advance()
+
+			expr = res.register(self.expr())
+			if res.error: return res
+			cases.append((condition, expr))
+
+		if self.current_tok.matches(token.T_KEYWORD, 'else'):
+			res.register_advancement()
+			self.advance()
+
+			expr = res.register(self.expr())
+			if res.error: return res
+			else_case = expr
+
+		return res.success(nodes.IfNode(cases, else_case))
+
+		
 
 	###################################
 
