@@ -179,7 +179,8 @@ Pansy> var result = 1
 Pansy> for i = 1 to 6 then var result = result * i
 Pansy> result
 Pansy> 120
-
+```
+```
 Pansy> var result = 1
 1
 Pansy> for i = 5 to 0 step -1 then var result = result * i
