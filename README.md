@@ -185,12 +185,13 @@ Pansy> var result = 1
 1
 Pansy> for i = 5 to 0 step -1 then var result = result * i
 Pansy> result
-Pansy> 120
+120
 ```
 
 #### While
 ```
 Pansy> var i = 0
+0
 Pansy> while i < 100 then var i = i + 1
 Pansy> i
 100
