@@ -11,6 +11,7 @@ Index
   * [Comparators](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#comparators)
   * [Variables](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#variables)
   * [If Statements](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#if-statements)
+  * [For and While Loops](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#for-and-while-loops)
 
 Getting Started
 ===============
@@ -152,7 +153,7 @@ Pansy> var c = 1==1      # Stores 1
 
 If Statements
 =============
-Pansy currently supports one liner if conditions:
+Pansy currently supports one liner ```if``` conditions:
 ```
 Pansy> if 2 == 2 then 101
 101
@@ -165,4 +166,31 @@ Pansy> if 2 == 0 then 1 elif 2 == 2 then 2 else 3
 
 Pansy> if 2 == 0 then 123
 # Nothing prints
+```
+
+For and While Loops
+===================
+Pansy currently supports one liner ```for``` and ```while``` loops:
+
+#### For
+```
+Pansy> var result = 1
+1
+Pansy> for i = 1 to 6 then var result = result * i
+Pansy> result
+Pansy> 120
+
+Pansy> var result = 1
+1
+Pansy> for i = 5 to 0 step -1 then var result = result * i
+Pansy> result
+Pansy> 120
+```
+
+#### While
+```
+Pansy> var i = 0
+Pansy> while i < 100 then var i = i + 1
+Pansy> i
+100
 ```

@@ -14,7 +14,11 @@ KEYWORDS = [
 	'if',
 	'then',
 	'elif',
-	'else'
+	'else',
+	'for',
+	'while',
+	'step',
+	'to'
 ]
 
 #######################################
