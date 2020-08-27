@@ -12,6 +12,7 @@ Index
   * [Variables](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#variables)
   * [If Statements](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#if-statements)
   * [For and While Loops](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#for-and-while-loops)
+  * [Functions](https://github.com/andrefpoliveira/Pansy/blob/master/README.md#functions)
 
 Getting Started
 ===============
@@ -195,4 +196,14 @@ Pansy> var i = 0
 Pansy> while i < 100 then var i = i + 1
 Pansy> i
 100
+```
+
+Functions
+=========
+Pansy currently supports one liner ```functions```:
+```
+Pansy> func add(a, b) -> a + b
+<function add>
+Pansy> add(2, 3)
+5
 ```

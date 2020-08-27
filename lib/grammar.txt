@@ -11,11 +11,16 @@ term            : factor ((MUL|DIV|INT_DIV) factor)*
 factor          : (PLUS|MINUS) factor
                 : power
 
-power           : atom (POW factor)*
+power           : call (POW factor)*
+
+call            : atom (LPAREN (expr (COMMA expr)* )? RPAREN)?
 
 atom            : INT|FLOAT|IDENTIFIER
                 : LPAREN expr RPAREN
                 : if-expr
+                : for-expr
+                : while-expr
+                : func-def
 
 if-expr         : KEYWORD:if expr KEYWORD:then expr
                 : (KEYWORD:elif expr KEYWORD:then expr)*
@@ -25,3 +30,7 @@ for-expr        : KEYWORD:for IDENTIFIER EQ expr KEYWORD:to expr
                 : (KEYWORD:step expr)? KEYWORD:then expr
 
 while-expr      : KEYWORD:while expr KEYWORD:then expr
+
+func-def        : KEYWORD:fun IDENTIFIER?
+                : LPAREN (IDENTIFIER (COMMA IDENTIFIER)* )? RPAREN
+                : ARROW expr

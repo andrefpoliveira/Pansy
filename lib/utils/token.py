@@ -21,6 +21,8 @@ T_GT			= 'GT'
 T_LT 			= 'LT'
 T_GTE			= 'GTE'
 T_LTE			= 'LTE'
+T_COMMA			= 'COMMA'
+T_ARROW			= 'ARROW'
 T_EOF	   		= 'EOF'
 
 class Token:

@@ -18,7 +18,8 @@ KEYWORDS = [
 	'for',
 	'while',
 	'step',
-	'to'
+	'to',
+	'func'
 ]
 
 #######################################
@@ -51,8 +52,7 @@ class Lexer:
 				tokens.append(token.Token(token.T_PLUS, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == '-':
-				tokens.append(token.Token(token.T_MINUS, pos_start=self.pos))
-				self.advance()
+				tokens.append(self.make_minus_or_arrow())
 			elif self.current_char == '*':
 				tokens.append(token.Token(token.T_MUL, pos_start=self.pos))
 				self.advance()
@@ -66,6 +66,9 @@ class Lexer:
 				self.advance()
 			elif self.current_char == ')':
 				tokens.append(token.Token(token.T_RPAREN, pos_start=self.pos))
+				self.advance()
+			elif self.current_char == ',':
+				tokens.append(token.Token(token.T_COMMA, pos_start=self.pos))
 				self.advance()
 			elif self.current_char == '!':
 				tok, error = self.make_not_equals()
@@ -169,5 +172,16 @@ class Lexer:
 		if self.current_char == '/':
 			self.advance()
 			tok_type = token.T_INT_DIV
+
+		return token.Token(tok_type, pos_start=pos_start, pos_end=self.pos)
+
+	def make_minus_or_arrow(self):
+		tok_type = token.T_MINUS
+		pos_start = self.pos.copy()
+		self.advance()
+
+		if self.current_char == '>':
+			self.advance()
+			tok_type = token.T_ARROW
 
 		return token.Token(tok_type, pos_start=pos_start, pos_end=self.pos)
