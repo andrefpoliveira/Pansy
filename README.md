@@ -49,6 +49,25 @@ Features
 Pansy currently supports the following data type:
 * ```Integer```
 * ```Float```
+* ```String```
+
+#### Integer
+```
+Pansy> 10
+10
+```
+
+#### Float
+```
+Pansy> 5.0
+5.0
+```
+
+#### Integer
+```
+Pansy> "This is a string!"
+This is a string!
+```
 
 ### Operators
 Pansy currently supports the following operations: ```Sum```, ```Subtraction```, ```Multiplication```, ```Division```, ```Int Division``` and ```Power```  

@@ -12,6 +12,16 @@ class NumberNode:
 	def __repr__(self):
 		return f'{self.tok}'
 
+class StringNode:
+	def __init__(self, tok):
+		self.tok = tok
+
+		self.pos_start = self.tok.pos_start
+		self.pos_end = self.tok.pos_end
+
+	def __repr__(self):
+		return f'{self.tok}'
+
 class VarAccessNode:
 	def __init__(self, var_name_tok):
 		self.var_name_tok = var_name_tok
@@ -103,3 +113,5 @@ class CallNode:
 			self.pos_end = self.arg_nodes[len(self.arg_nodes)-1].pos_end
 		else:
 			self.pos_end = self.node_to_call.pos_end
+
+			

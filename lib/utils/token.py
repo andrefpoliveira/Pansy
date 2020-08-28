@@ -4,6 +4,7 @@
 
 T_INT	   		= 'INT'
 T_FLOAT    		= 'FLOAT'
+T_STRING		= 'STRING'
 T_IDENTIFIER	= 'IDENTIFIER'
 T_KEYWORD 		= 'KEYWORD'
 T_PLUS     		= 'PLUS'
