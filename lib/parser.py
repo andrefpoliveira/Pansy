@@ -74,7 +74,7 @@ class Parser:
 				if res.error:
 					return res.failure(errors.InvalidSyntaxError(
 						self.current_tok.pos_start, self.current_tok.pos_end,
-						"Expected ')', 'var', 'if', 'for', 'while', 'func', int, float or identifier"
+						"Expected ')', 'var', 'if', 'for', 'while', 'func', int, float, identifier, '+', '-', '(', '[' or 'not'"
 					))
 
 				while self.current_tok.type == token.T_COMMA:
@@ -130,6 +130,12 @@ class Parser:
 					self.current_tok.pos_start, self.current_tok.pos_end,
 					"Expected ')'"
 				))
+
+		elif tok.type == token.T_LSQUARE:
+			list_expr = res.register(self.list_expr())
+			if res.error: return res
+			return res.success(list_expr)
+
 		elif tok.matches(token.T_KEYWORD, 'if'):
 			if_expr = res.register(self.if_expr())
 			if res.error: return res
@@ -152,11 +158,55 @@ class Parser:
 
 		return res.failure(errors.InvalidSyntaxError(
 			tok.pos_start, tok.pos_end,
-			"Expected int or float, identifier, '+', '-' or '(', 'if', 'for', 'while' or 'func'"
+			"Expected int or float, identifier, '+', '-' or '(', , '[', 'if', 'for', 'while' or 'func'"
 		))
 
 	def power(self):
 		return self.bin_op(self.call, (token.T_POW, ), self.factor)
+
+	def list_expr(self):
+		res = ParseResult()
+		element_nodes = []
+		pos_start = self.current_tok.pos_start.copy()
+
+		if self.current_tok.type != token.T_LSQUARE:
+			return res.failure(errors.InvalidSyntaxError(
+				self.current_tok.pos_start, self.current_tok.pos_end,
+				f"Expected '['"
+			))
+
+		res.register_advancement()
+		self.advance()
+
+		if self.current_tok.type == token.T_RSQUARE:
+			res.register_advancement()
+			self.advance()
+		else:
+			element_nodes.append(res.register(self.expr()))
+			if res.error:
+				return res.failure(errors.InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ']', 'var', 'if', 'for', 'while', 'func', int, float, identifier, '+', '-', '(', '[' or 'not'"
+				))
+
+			while self.current_tok.type == token.T_COMMA:
+				res.register_advancement()
+				self.advance()
+
+				element_nodes.append(res.register(self.expr()))
+				if res.error: return res
+
+			if self.current_tok.type != token.T_RSQUARE:
+				return res.failure(errors.InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ',' or ']'"
+				))
+
+			res.register_advancement()
+			self.advance()
+		return res.success(nodes.ListNode(
+			element_nodes, pos_start, self.current_tok.pos_end.copy()
+		))
 
 
 	def factor(self):
@@ -195,7 +245,7 @@ class Parser:
 		if res.error:
 			return res.failure(errors.InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				"Expected int or float, identifier, '+', '-', '(' or 'not'"
+				"Expected int or float, identifier, '+', '-', '(', '[' or 'not'"
 			))
 
 		return res.success(node)
@@ -235,7 +285,7 @@ class Parser:
 		if res.error:
 			return res.failure(errors.InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				"Expected int or float, identifier, 'var', 'if', 'for', 'while', 'func', '+', '-' or '('"
+				"Expected int or float, identifier, 'var', 'if', 'for', 'while', 'func', '+', '-', '(' or '['"
 			))
 
 		return res.success(node)

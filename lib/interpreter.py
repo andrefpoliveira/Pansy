@@ -93,11 +93,66 @@ class Value:
 
 	def illegal_operation(self, other=None):
 		if not other: other = self
-		return RTError(
+		return errors.RTError(
 			self.pos_start, other.pos_end,
 			'Illegal operation',
 			self.context
 		)
+
+class List(Value):
+	def __init__(self, elements):
+		super().__init__()
+		self.elements = elements
+
+	def added_to(self, other):
+		new_list = self.copy()
+		new_list.elements.append(other)
+		return new_list, None
+
+	def multed_by(self, other):
+		if isinstance(other, List):
+			new_list = self.copy()
+			new_list.elements.extend(other.elements)
+			return new_list, None
+		else:
+			return None, Value.illegal_operation(self, other)
+
+	def subbed_by(self, other):
+		if isinstance(other, Number):
+			new_list = self.copy()
+			try:
+				new_list.elements.pop(other.value)
+				return new_list, None
+			except:
+				return None, errors.RTError(
+					other.pos_start, other.pos_end,
+					"Element at this index could not be removed form the list because the index is out of bounds",
+					self.context
+				)
+		else:
+			return None, Value.illegal_operation(self, other)
+
+	def dived_by(self, other):
+		if isinstance(other, Number):
+			try:
+				return self.elements[other.value], None
+			except:
+				return None, errors.RTError(
+					other.pos_start, other.pos_end,
+					"Element at this index could not be retrieved form the list because the index is out of bounds",
+					self.context
+				)
+		else:
+			return None, Value.illegal_operation(self, other)
+
+	def copy(self):
+		copy = List(self.elements[:])
+		copy.set_context(self.context)
+		copy.set_pos(self.pos_start, self.pos_end)
+		return copy
+
+	def __repr__(self):
+		return f'[{", ".join([str(x) for x in self.elements])}]'
 
 class Number(Value):
 	def __init__(self, value):
@@ -336,6 +391,18 @@ class Interpreter:
 			String(node.tok.value).set_context(context).set_pos(node.pos_start, node.pos_end)
 		)
 
+	def visit_ListNode(self, node, context):
+		res = RTResult()
+		elements = []
+
+		for element_node in node.element_nodes:
+			elements.append(res.register(self.visit(element_node, context)))
+			if res.error: return res
+
+		return res.success(
+			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+		)
+
 	def visit_VarAccessNode(self, node, context):
 		res = RTResult()
 		var_name = node.var_name_tok.value
@@ -439,6 +506,7 @@ class Interpreter:
 
 	def visit_ForNode(self, node, context):
 		res = RTResult()
+		elements = []
 
 		start_value = res.register(self.visit(node.start_value_node, context))
 		if res.error: return res
@@ -463,13 +531,16 @@ class Interpreter:
 			context.symbol_table.set(node.var_name_tok.value, Number(i))
 			i += step_value.value
 
-			res.register(self.visit(node.body_node, context))
+			elements.append(res.register(self.visit(node.body_node, context)))
 			if res.error: return res
 
-		return res.success(None)
+		return res.success(
+			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+		)
 
 	def visit_WhileNode(self, node, context):
 		res = RTResult()
+		elements = []
 
 		while True:
 			condition = res.register(self.visit(node.condition_node, context))
@@ -477,10 +548,12 @@ class Interpreter:
 
 			if not condition.is_true(): break
 
-			res.register(self.visit(node.body_node, context))
+			elements.append(res.register(self.visit(node.body_node, context)))
 			if res.error: return res
 
-		return res.success(None)
+		return res.success(
+			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+		)
 
 	def visit_FunctionDefNode(self, node, context):
 		res = RTResult()
