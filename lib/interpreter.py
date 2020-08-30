@@ -81,7 +81,7 @@ class Value:
 		return None, self.illegal_operation(other)
 
 	def notted(self):
-		return None, self.illegal_operation(other)
+		return None, self.illegal_operation()
 
 	def execute(self, args):
 		return RTResult().failure(self.illegal_operation())
@@ -341,10 +341,11 @@ class BaseFunction(Value):
 		return res.success(None)
 
 class Function(BaseFunction):
-	def __init__(self, name, body_node, arg_names):
+	def __init__(self, name, body_node, arg_names, should_return_null):
 		super().__init__()
 		self.body_node = body_node
 		self.arg_names = arg_names
+		self.should_return_null = should_return_null
 
 	def execute(self, args):
 		res = RTResult()
@@ -356,10 +357,10 @@ class Function(BaseFunction):
 
 		value = res.register(interpreter.visit(self.body_node, exec_ctx))
 		if res.error: return res
-		return res.success(value)
+		return res.success(Number.null if self.should_return_null else value)
 
 	def copy(self):
-		copy = Function(self.name, self.body_node, self.arg_names)
+		copy = Function(self.name, self.body_node, self.arg_names, self.should_return_null)
 		copy.set_context(self.context)
 		copy.set_pos(self.pos_start, self.pos_end)
 		return copy
@@ -629,21 +630,21 @@ class Interpreter:
 		elif node.op_tok.type == token.T_POW:
 			result, error = left.powed_by(right)
 		elif node.op_tok.type == token.T_EE:
-			result, error = left.get_comp_ee(right)
+			result, error = left.get_comparison_eq(right)
 		elif node.op_tok.type == token.T_NE:
-			result, error = left.get_comp_ne(right)
+			result, error = left.get_comparison_ne(right)
 		elif node.op_tok.type == token.T_LT:
-			result, error = left.get_comp_lt(right)
+			result, error = left.get_comparison_lt(right)
 		elif node.op_tok.type == token.T_GT:
-			result, error = left.get_comp_gt(right)
+			result, error = left.get_comparison_gt(right)
 		elif node.op_tok.type == token.T_LTE:
-			result, error = left.get_comp_lte(right)
+			result, error = left.get_comparison_lte(right)
 		elif node.op_tok.type == token.T_GTE:
-			result, error = left.get_comp_gte(right)
+			result, error = left.get_comparison_gte(right)
 		elif node.op_tok.matches(token.T_KEYWORD, 'and'):
-			result, error = left.and_with(right)
+			result, error = left.anded_by(right)
 		elif node.op_tok.matches(token.T_KEYWORD, 'or'):
-			result, error = left.or_with(right)
+			result, error = left.ored_by(right)
 
 		if error:
 			return res.failure(error)
@@ -670,21 +671,22 @@ class Interpreter:
 	def visit_IfNode(self, node, context):
 		res = RTResult()
 
-		for condition, expr in node.cases:
+		for condition, expr, should_return_null in node.cases:
 			condition_value = res.register(self.visit(condition, context))
 			if res.error: return res
 
 			if condition_value.is_true():
 				expr_value = res.register(self.visit(expr, context))
 				if res.error: return res
-				return res.success(expr_value)
+				return res.success(Number.null if should_return_null else expr_value)
 
 		if node.else_case:
-			else_value = res.register(self.visit(node.else_case, context))
+			expr, should_return_null = node.else_case
+			else_value = res.register(self.visit(expr, context))
 			if res.error: return res
-			return res.success(else_value)
+			return res.success(Number.null if should_return_null else else_value)
 
-		return res.success(None)
+		return res.success(Number.null)
 
 	def visit_ForNode(self, node, context):
 		res = RTResult()
@@ -717,6 +719,7 @@ class Interpreter:
 			if res.error: return res
 
 		return res.success(
+			Number.null if node.should_return_null else 
 			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
 		)
 
@@ -734,6 +737,7 @@ class Interpreter:
 			if res.error: return res
 
 		return res.success(
+			Number.null if node.should_return_null else 
 			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
 		)
 
@@ -744,7 +748,7 @@ class Interpreter:
 		body_node = node.body_node
 		arg_names = [arg_name.value for arg_name in node.arg_name_toks]
 
-		func_value = Function(func_name, body_node, arg_names).set_context(context).set_pos(node.pos_start, node.pos_end)
+		func_value = Function(func_name, body_node, arg_names, node.should_return_null).set_context(context).set_pos(node.pos_start, node.pos_end)
 		if node.var_name_tok:
 			context.symbol_table.set(func_name, func_value)
 
