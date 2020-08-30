@@ -1,5 +1,5 @@
 from lib.utils import token
-from lib import errors
+from lib import errors, lexer, parser
 import os
 
 #######################################
@@ -88,6 +88,12 @@ class Value:
 		return None, self.illegal_operation(other)
 
 	def powed_by(self, other):
+		return None, self.illegal_operation(other)
+
+	def int_dived_by(self, other):
+		return None, self.illegal_operation(other)
+
+	def remainder_of(self, other):
 		return None, self.illegal_operation(other)
 
 	def get_comparison_eq(self, other):
@@ -222,6 +228,32 @@ class Number(Value):
 				)
 
 			return Number(self.value / other.value).set_context(self.context), None
+		else:
+			return None, Value.illegal_operation(self, other)
+
+	def int_dived_by(self, other):
+		if isinstance(other, Number):
+			if other.value == 0:
+				return None, errors.RTError(
+					other.pos_start, other.pos_end,
+					'Division by zero',
+					self.context
+				)
+
+			return Number(self.value // other.value).set_context(self.context), None
+		else:
+			return None, Value.illegal_operation(self, other)
+
+	def remainder_of(self, other):
+		if isinstance(other, Number):
+			if other.value == 0:
+				return None, errors.RTError(
+					other.pos_start, other.pos_end,
+					'Division by zero',
+					self.context
+				)
+
+			return Number(self.value % other.value).set_context(self.context), None
 		else:
 			return None, Value.illegal_operation(self, other)
 
@@ -389,7 +421,7 @@ class Function(BaseFunction):
 		res.register(self.check_and_populate_args(self.arg_names, args, exec_ctx))
 		if res.should_return(): return res
 
-		value = res.register(interpreter.visit(self.body_node, exec_ctx))
+		value = res.register(visit(self.body_node, exec_ctx))
 		if res.should_return() and res.func_return_value == None: return res
 
 		ret_value = (value if self.should_auto_return else None) or res.func_return_value or Number.null
@@ -540,6 +572,64 @@ class BuiltInFunction(BaseFunction):
 
 	execute_extend.arg_names = ['listA', 'listB']
 
+	def execute_len(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+
+		if not isinstance(list, List):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Argument must be a list",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(len(list_.elements)))
+	execute_len.arg_names = ['list']
+
+	def execute_run(self, exec_ctx):
+		fn = exec_ctx.symbol_table.get('fn')
+
+		if not isinstance(fn, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Argument must be a string",
+				exec_ctx
+			))
+
+		a = fn.value.split('.')
+
+		if a[len(a)-1] != "pansy":
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"File extension must be .pansy",
+				exec_ctx
+			))
+
+		fn = fn.value
+
+		try:
+			with open(fn, "r") as f:
+				script = f.read()
+		except Exception as e:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Failed to load the file \"{fn}\"\n" + str(e),
+				exec_ctx
+			))
+
+		_, error = run(fn, script)
+
+		if error:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Failed to finish executing script \"{fn}\"\n" + error.as_string(),
+				exec_ctx
+			))
+
+		return RTResult().success(Number.null)
+
+
+	execute_run.arg_names = ['fn']
+
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
@@ -551,6 +641,8 @@ BuiltInFunction.is_function 	=	BuiltInFunction("is_function")
 BuiltInFunction.append 			=	BuiltInFunction("append")
 BuiltInFunction.pop 			=	BuiltInFunction("pop")
 BuiltInFunction.extend 			=	BuiltInFunction("extend")
+BuiltInFunction.run				=   BuiltInFunction("run")
+BuiltInFunction.len 			= 	BuiltInFunction("len")
 
 
 #######################################
@@ -663,6 +755,8 @@ class Interpreter:
 			result, error = left.dived_by(right)
 		elif node.op_tok.type == token.T_INT_DIV:
 			result, error = left.int_dived_by(right)
+		elif node.op_tok.type == token.T_REMAINDER:
+			result, error = left.remainder_of(right)
 		elif node.op_tok.type == token.T_POW:
 			result, error = left.powed_by(right)
 		elif node.op_tok.type == token.T_EE:
@@ -840,3 +934,45 @@ class Interpreter:
 
 	def visit_BreakNode(self, node, context):
 		return RTResult().success_break()
+
+
+
+
+
+global_symbol_table = SymbolTable()
+global_symbol_table.set("None", Number.null)
+global_symbol_table.set("False", Number.false)
+global_symbol_table.set("True", Number.true)
+global_symbol_table.set("print", BuiltInFunction.print)
+global_symbol_table.set("input", BuiltInFunction.input)
+global_symbol_table.set("clear", BuiltInFunction.clear)
+global_symbol_table.set("is_number", BuiltInFunction.is_number)
+global_symbol_table.set("is_string", BuiltInFunction.is_string)
+global_symbol_table.set("is_list", BuiltInFunction.is_list)
+global_symbol_table.set("is_function", BuiltInFunction.is_function)
+global_symbol_table.set("append", BuiltInFunction.append)
+global_symbol_table.set("pop", BuiltInFunction.pop)
+global_symbol_table.set("extend", BuiltInFunction.extend)
+global_symbol_table.set("run", BuiltInFunction.run)
+global_symbol_table.set("len", BuiltInFunction.len)
+
+#####################
+# RUN
+#####################
+def run(fn, text):
+	# Generate tokens
+	lex = lexer.Lexer(fn, text)
+	tokens, error = lex.make_tokens()
+	if error: return None, error
+
+	# Generate AST
+	pars = parser.Parser(tokens)
+	ast = pars.parse()
+	if ast.error: return None, ast.error
+
+	inter = Interpreter()
+	context = Context('<program>')
+	context.symbol_table = global_symbol_table
+	result = inter.visit(ast.node, context)
+
+	return result.value, result.error

@@ -1,10 +1,10 @@
-from lib import pansy
+from lib.interpreter import run
 
 while True:
     text = input('Pansy> ')
     if text == "exit": break
     if text.strip() == '': continue
-    result, error = pansy.run('<stdin>', text)
+    result, error = run('<stdin>', text)
 
     if error:
         print(error.as_string())

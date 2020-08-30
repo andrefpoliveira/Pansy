@@ -311,7 +311,7 @@ class Parser:
 		return self.power()
 
 	def term(self):
-		return self.bin_op(self.factor, (token.T_MUL, token.T_DIV, token.T_INT_DIV))
+		return self.bin_op(self.factor, (token.T_MUL, token.T_DIV, token.T_INT_DIV, token.T_REMAINDER))
 
 	def arithm_expr(self):
 		return self.bin_op(self.term, (token.T_PLUS, token.T_MINUS))
