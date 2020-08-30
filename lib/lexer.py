@@ -20,7 +20,10 @@ KEYWORDS = [
 	'step',
 	'to',
 	'func',
-	'end'
+	'end',
+	'break',
+	'return',
+	'continue'
 ]
 
 #######################################
