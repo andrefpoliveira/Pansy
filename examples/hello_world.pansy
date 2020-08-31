@@ -1,5 +1,7 @@
+@ Description: The basic program. Prints "Hello World!"
+
 func helloWorld() {
-    print("Hello world!")
+    print("Hello World!")
 }
 
 helloWorld()
