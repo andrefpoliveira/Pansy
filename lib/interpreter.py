@@ -547,7 +547,7 @@ class BuiltInFunction(BaseFunction):
 	def execute_len(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 
-		if not isinstance(list, List):
+		if not isinstance(list_, List):
 			return RTResult().failure(errors.RTError(
 				self.pos_start, self.pos_end,
 				"Argument must be a list",
