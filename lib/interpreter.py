@@ -145,34 +145,6 @@ class List(Value):
 		super().__init__()
 		self.elements = elements
 
-	def added_to(self, other):
-		new_list = self.copy()
-		new_list.elements.append(other)
-		return new_list, None
-
-	def multed_by(self, other):
-		if isinstance(other, List):
-			new_list = self.copy()
-			new_list.elements.extend(other.elements)
-			return new_list, None
-		else:
-			return None, Value.illegal_operation(self, other)
-
-	def subbed_by(self, other):
-		if isinstance(other, Number):
-			new_list = self.copy()
-			try:
-				new_list.elements.pop(other.value)
-				return new_list, None
-			except:
-				return None, errors.RTError(
-					other.pos_start, other.pos_end,
-					"Element at this index could not be removed form the list because the index is out of bounds",
-					self.context
-				)
-		else:
-			return None, Value.illegal_operation(self, other)
-
 	def dived_by(self, other):
 		if isinstance(other, Number):
 			try:
@@ -421,7 +393,7 @@ class Function(BaseFunction):
 		res.register(self.check_and_populate_args(self.arg_names, args, exec_ctx))
 		if res.should_return(): return res
 
-		value = res.register(visit(self.body_node, exec_ctx))
+		value = res.register(interpreter.visit(self.body_node, exec_ctx))
 		if res.should_return() and res.func_return_value == None: return res
 
 		ret_value = (value if self.should_auto_return else None) or res.func_return_value or Number.null
@@ -630,6 +602,48 @@ class BuiltInFunction(BaseFunction):
 
 	execute_run.arg_names = ['fn']
 
+	def execute_to_str(self, exec_ctx):
+		value = exec_ctx.symbol_table.get('value')
+
+		if isinstance(value, BaseFunction):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Cannot convert Function to String",
+				exec_ctx
+			))
+
+		return RTResult().success(String(str(value)))
+
+	execute_to_str.arg_names = ['value']
+
+	def execute_to_int(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+
+		try:
+			return RTResult().success(Number(int(number.value)))
+		except:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument can't be converted to Integer",
+				exec_ctx
+			))
+
+	execute_to_int.arg_names = ['number']
+
+	def execute_to_float(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+
+		try:
+			return RTResult().success(Number(float(number.value)))
+		except:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument can't be converted to Integer",
+				exec_ctx
+			))
+
+	execute_to_float.arg_names = ['number']
+
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
@@ -643,6 +657,9 @@ BuiltInFunction.pop 			=	BuiltInFunction("pop")
 BuiltInFunction.extend 			=	BuiltInFunction("extend")
 BuiltInFunction.run				=   BuiltInFunction("run")
 BuiltInFunction.len 			= 	BuiltInFunction("len")
+BuiltInFunction.to_str 			= 	BuiltInFunction("to_str")
+BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
+BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 
 
 #######################################
@@ -892,6 +909,14 @@ class Interpreter:
 		res = RTResult()
 
 		func_name = node.var_name_tok.value if node.var_name_tok else None
+
+		if func_name in global_symbol_table.symbols:
+			return res.failure(errors.RTError(
+				node.pos_start, node.pos_end,
+				f"There is a function called '{func_name}' already defined",
+				context
+			))
+
 		body_node = node.body_node
 		arg_names = [arg_name.value for arg_name in node.arg_name_toks]
 
@@ -955,6 +980,9 @@ global_symbol_table.set("pop", BuiltInFunction.pop)
 global_symbol_table.set("extend", BuiltInFunction.extend)
 global_symbol_table.set("run", BuiltInFunction.run)
 global_symbol_table.set("len", BuiltInFunction.len)
+global_symbol_table.set("to_str", BuiltInFunction.to_str)
+global_symbol_table.set("to_int", BuiltInFunction.to_int)
+global_symbol_table.set("to_float", BuiltInFunction.to_float)
 
 #####################
 # RUN

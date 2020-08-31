@@ -1,13 +1,15 @@
 @ Fuzz Buzz Program
 
-for i=0 to 51 then
-    if i%3 == 0 and i%5 == 0 then
-        print("FizzBuzz")
-    elif i%3 == 0 then
-        print("Fizz")
-    elif i%5 == 0 then
-        print("Buzz")
-    else 
-        print(i)
-    end
+var sol = 5
+var number = -1
+
+print("Adivinha um numero de 1 a 10!")
+print("Que numero queres escolher?")
+var number = to_int(input())
+
+while number != sol:
+    print("Numero errado! Escolhe outro!")
+    var number = to_int(input())
 end
+
+print("Boa o numero correto era " + to_str(sol))

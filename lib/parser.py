@@ -402,10 +402,10 @@ class Parser:
 		condition = res.register(self.expr())
 		if res.error: return res
 
-		if not self.current_tok.matches(token.T_KEYWORD, 'then'):
+		if not self.current_tok.type == token.T_COLON:
 			return res.failure(errors.InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected 'then'"
+				"Expected ':'"
 			))
 
 		res.register_advancement()
@@ -419,7 +419,7 @@ class Parser:
 			if res.error: return res
 			cases.append((condition, statements, True))
 
-			if self.current_tok.matches(token.T_KEYWORD, 'end'):
+			if self.current_tok.type == token.T_RCURLY:
 				res.register_advancement()
 				self.advance()
 			else:
@@ -450,6 +450,15 @@ class Parser:
 			res.register_advancement()
 			self.advance()
 
+			if self.current_tok.type != token.T_COLON:
+				return res.failure(errors.InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ':'"
+				))
+
+			res.register_advancement()
+			self.advance()
+
 			if self.current_tok.type == token.T_NEWLINE:
 				res.register_advancement()
 				self.advance()
@@ -457,15 +466,6 @@ class Parser:
 				statements = res.register(self.statements())
 				if res.error: return res
 				else_case = (statements, True)
-
-				if self.current_tok.matches(token.T_KEYWORD, 'end'):
-					res.register_advancement()
-					self.advance()
-				else:
-					return res.failure(errors.InvalidSyntaxError(
-						self.current_tok.pos_start, self.current_tok.pos_end,
-						"Expected 'end'"
-					))
 			else:
 				expr = res.register(self.statement())
 				if res.error: return res
@@ -543,10 +543,10 @@ class Parser:
 		else:
 			step_value = None
 
-		if not self.current_tok.matches(token.T_KEYWORD, 'then'):
+		if not self.current_tok.type == token.T_COLON:
 			return res.failure(errors.InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected 'then'"
+				"Expected ':'"
 			))
 
 		res.register_advancement()
@@ -559,10 +559,10 @@ class Parser:
 			body = res.register(self.statements())
 			if res.error: return res
 
-			if not self.current_tok.matches(token.T_KEYWORD, 'end'):
+			if not self.current_tok.matches(token.T_KEYWORD, 'END'):
 				return res.failure(errors.InvalidSyntaxError(
-				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected 'end'"
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					f"Expected 'END'"
 				))
 
 			res.register_advancement()
@@ -590,10 +590,10 @@ class Parser:
 		condition = res.register(self.expr())
 		if res.error: return res
 
-		if not self.current_tok.matches(token.T_KEYWORD, 'then'):
+		if not self.current_tok.type == token.T_COLON:
 			return res.failure(errors.InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected 'then'"
+				"Expected ':'"
 			))
 
 		res.register_advancement()
@@ -608,8 +608,8 @@ class Parser:
 
 			if not self.current_tok.matches(token.T_KEYWORD, 'end'):
 				return res.failure(errors.InvalidSyntaxError(
-				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected 'end'"
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					f"Expected 'end'"
 				))
 
 			res.register_advancement()
@@ -703,6 +703,15 @@ class Parser:
 				body,
 				True
 			))
+
+		if self.current_tok.type != token.T_LCURLY:
+			return res.failure(errors.InvalidSyntaxError(
+				self.current_tok.pos_start, self.current_tok.pos_end,
+				"Expected '{'"
+			))
+
+		res.register_advancement()
+		self.advance()
     
 		if self.current_tok.type != token.T_NEWLINE:
 			return res.failure(errors.InvalidSyntaxError(
@@ -716,10 +725,10 @@ class Parser:
 		body = res.register(self.statements())
 		if res.error: return res
 
-		if not self.current_tok.matches(token.T_KEYWORD, 'end'):
+		if self.current_tok.type != token.T_RCURLY:
 			return res.failure(errors.InvalidSyntaxError(
 				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected 'end'"
+				"Expected '}'"
 			))
 
 		res.register_advancement()
