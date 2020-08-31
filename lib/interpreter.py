@@ -501,7 +501,7 @@ class BuiltInFunction(BaseFunction):
 				exec_ctx
 			))
 
-		if not isinstance(list_, Number):
+		if not isinstance(index, Number):
 			return RTResult().failure(errors.RTError(
 				self.pos_start, self.pos_end,
 				"Second argument must be a number",
