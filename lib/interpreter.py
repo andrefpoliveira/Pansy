@@ -544,6 +544,35 @@ class BuiltInFunction(BaseFunction):
 
 	execute_extend.arg_names = ['listA', 'listB']
 
+	def execute_get(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+		index = exec_ctx.symbol_table.get('index')
+
+		if not isinstance(list_, List):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a list",
+				exec_ctx
+			))
+
+		if not isinstance(index, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a number",
+				exec_ctx
+			))
+
+		try:
+			return RTResult().success(list_.elements[index.value])
+		except:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Element at this index could not be retrieved because the index is out of bounds",
+				exec_ctx
+			))
+
+	execute_get.arg_names = ['list', 'index']
+
 	def execute_len(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 
@@ -657,6 +686,7 @@ BuiltInFunction.is_function 	=	BuiltInFunction("is_function")
 BuiltInFunction.append 			=	BuiltInFunction("append")
 BuiltInFunction.pop 			=	BuiltInFunction("pop")
 BuiltInFunction.extend 			=	BuiltInFunction("extend")
+BuiltInFunction.get				= 	BuiltInFunction("get")
 BuiltInFunction.run				=   BuiltInFunction("run")
 BuiltInFunction.len 			= 	BuiltInFunction("len")
 BuiltInFunction.to_str 			= 	BuiltInFunction("to_str")
@@ -912,8 +942,6 @@ class Interpreter:
 
 		func_name = node.var_name_tok.value if node.var_name_tok else None
 
-		print(global_symbol_table.symbols)
-
 		if func_name in global_symbol_table.symbols:
 			return res.failure(errors.RTError(
 				node.pos_start, node.pos_end,
@@ -981,6 +1009,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("append", BuiltInFunction.append)
 	global_symbol_table.set("pop", BuiltInFunction.pop)
 	global_symbol_table.set("extend", BuiltInFunction.extend)
+	global_symbol_table.set("get", BuiltInFunction.get)
 	global_symbol_table.set("run", BuiltInFunction.run)
 	global_symbol_table.set("len", BuiltInFunction.len)
 	global_symbol_table.set("to_str", BuiltInFunction.to_str)
