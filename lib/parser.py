@@ -419,7 +419,7 @@ class Parser:
 			if res.error: return res
 			cases.append((condition, statements, True))
 
-			if self.current_tok.type == token.T_RCURLY:
+			if self.current_tok.matches(token.T_KEYWORD, 'end'):
 				res.register_advancement()
 				self.advance()
 			else:
@@ -466,6 +466,15 @@ class Parser:
 				statements = res.register(self.statements())
 				if res.error: return res
 				else_case = (statements, True)
+
+				if self.current_tok.matches(TT_KEYWORD, 'END'):
+					res.register_advancement()
+					self.advance()
+				else:
+					return res.failure(InvalidSyntaxError(
+						self.current_tok.pos_start, self.current_tok.pos_end,
+						"Expected 'END'"
+					))
 			else:
 				expr = res.register(self.statement())
 				if res.error: return res
