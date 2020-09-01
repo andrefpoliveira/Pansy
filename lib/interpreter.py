@@ -558,6 +558,8 @@ class BuiltInFunction(BaseFunction):
 	execute_len.arg_names = ['list']
 
 	def execute_run(self, exec_ctx):
+		global global_symbol_table
+		global_symbol_table = reset_global_symbol_table()
 		fn = exec_ctx.symbol_table.get('fn')
 
 		if not isinstance(fn, String):
@@ -910,6 +912,8 @@ class Interpreter:
 
 		func_name = node.var_name_tok.value if node.var_name_tok else None
 
+		print(global_symbol_table.symbols)
+
 		if func_name in global_symbol_table.symbols:
 			return res.failure(errors.RTError(
 				node.pos_start, node.pos_end,
@@ -962,27 +966,29 @@ class Interpreter:
 
 
 
+def reset_global_symbol_table():
+	global_symbol_table = SymbolTable()
+	global_symbol_table.set("None", Number.null)
+	global_symbol_table.set("False", Number.false)
+	global_symbol_table.set("True", Number.true)
+	global_symbol_table.set("print", BuiltInFunction.print)
+	global_symbol_table.set("input", BuiltInFunction.input)
+	global_symbol_table.set("clear", BuiltInFunction.clear)
+	global_symbol_table.set("is_number", BuiltInFunction.is_number)
+	global_symbol_table.set("is_string", BuiltInFunction.is_string)
+	global_symbol_table.set("is_list", BuiltInFunction.is_list)
+	global_symbol_table.set("is_function", BuiltInFunction.is_function)
+	global_symbol_table.set("append", BuiltInFunction.append)
+	global_symbol_table.set("pop", BuiltInFunction.pop)
+	global_symbol_table.set("extend", BuiltInFunction.extend)
+	global_symbol_table.set("run", BuiltInFunction.run)
+	global_symbol_table.set("len", BuiltInFunction.len)
+	global_symbol_table.set("to_str", BuiltInFunction.to_str)
+	global_symbol_table.set("to_int", BuiltInFunction.to_int)
+	global_symbol_table.set("to_float", BuiltInFunction.to_float)
+	return global_symbol_table
 
-
-global_symbol_table = SymbolTable()
-global_symbol_table.set("None", Number.null)
-global_symbol_table.set("False", Number.false)
-global_symbol_table.set("True", Number.true)
-global_symbol_table.set("print", BuiltInFunction.print)
-global_symbol_table.set("input", BuiltInFunction.input)
-global_symbol_table.set("clear", BuiltInFunction.clear)
-global_symbol_table.set("is_number", BuiltInFunction.is_number)
-global_symbol_table.set("is_string", BuiltInFunction.is_string)
-global_symbol_table.set("is_list", BuiltInFunction.is_list)
-global_symbol_table.set("is_function", BuiltInFunction.is_function)
-global_symbol_table.set("append", BuiltInFunction.append)
-global_symbol_table.set("pop", BuiltInFunction.pop)
-global_symbol_table.set("extend", BuiltInFunction.extend)
-global_symbol_table.set("run", BuiltInFunction.run)
-global_symbol_table.set("len", BuiltInFunction.len)
-global_symbol_table.set("to_str", BuiltInFunction.to_str)
-global_symbol_table.set("to_int", BuiltInFunction.to_int)
-global_symbol_table.set("to_float", BuiltInFunction.to_float)
+global_symbol_table = reset_global_symbol_table()
 
 #####################
 # RUN
