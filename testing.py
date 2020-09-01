@@ -32,5 +32,5 @@ for i in test_folders:
     compareFiles("out.txt", f"{example_path + i}/output.txt")
     f.close()
     
-
+os.remove("out.txt")
 sys.stdout = orig_stdout
