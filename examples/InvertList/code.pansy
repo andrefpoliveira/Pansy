@@ -1,0 +1,12 @@
+func inverse(lst){
+    var new_lst = []
+    var length = len(lst) - 1
+    for i = length to -1 step -1:
+        var aux = get(lst, i)
+        append(new_lst, aux)
+    end
+    return new_lst
+}
+
+var x = [1,2,3,4,5]
+print(inverse(x))
