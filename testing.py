@@ -29,7 +29,7 @@ for i in test_folders:
     sys.stdout = f
     shell.main("run(" + example_path + i + "/code.pansy)")
     f.flush()
-    compareFiles("out.txt", f"{example_path + i}/output.txt")
+    compareFiles("out.txt", example_path + i +"/output.txt")
     f.close()
     
 os.remove("out.txt")
