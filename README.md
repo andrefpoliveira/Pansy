@@ -106,7 +106,7 @@ Pansy comes with some built-in functions (more on the way :wink:):
 * ```extend(arg1, arg2)``` - Joins to lists together
 * ```get(arg1, arg2)``` - Gets the element at the index ```arg2``` of the list ```arg1```
 * ```run(arg)``` - Runs a program from a file with the extension ```.pansy```
-* ```len(arg)``` - Returns the length of the string ```arg```
+* ```len(arg)``` - Returns the length of the list ```arg```
 * ```to_str(arg)``` - Transforms ```arg``` to a string if possible
 * ```to_int(arg)``` - Transforms ```arg``` to a integer if possible
 * ```to_float(arg)``` - Transforms ```arg``` to a float if possible
