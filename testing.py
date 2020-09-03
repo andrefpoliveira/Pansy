@@ -13,11 +13,11 @@ def compareFiles(file1, file2):
     print(f2)
 
     if len(f1) - 1 > len(f2):
-        raise Exception("Some test is wrong: " + file2 + "\n" + f1 + " " + f2) 
+        raise Exception("Some test is wrong: " + file2 + "\n" + str(f1) + " " + str(f2)) 
 
     for i in range(len(f2)):
         if f1[i] != f2[i]:
-            raise Exception("Some line failed: " + file2 + "\n" + f1[i] + " " + f2[i])
+            raise Exception("Some line failed: " + file2 + "\n" + str(f1) + " " + str(f2))
 
 orig_stdout = sys.stdout
 example_path = "examples/"
