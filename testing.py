@@ -27,7 +27,7 @@ test_folders = list(filter(lambda x: len(x.split(".")) == 1, os.listdir('example
 for i in test_folders:
     f = open('out.txt', 'w')
     sys.stdout = f
-    shell.main("run('" + example_path + i + "/code.pansy')")
+    shell.main('run("' + example_path + i + '/code.pansy")')
     f.flush()
     compareFiles("out.txt", example_path + i +"/output.txt")
     f.close()
