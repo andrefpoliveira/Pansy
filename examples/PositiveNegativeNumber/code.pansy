@@ -1,0 +1,15 @@
+func positiveNegative(number) {
+    if number < 0:
+        print("Negative number")
+    elif number > 0:
+        print("Positive number")
+    else:
+        print("It's 0")
+    end
+}
+
+positiveNegative(10)
+positiveNegative(-10)
+positiveNegative(0)
+positiveNegative(1.0)
+positiveNegative(-1.0)
