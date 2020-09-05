@@ -467,13 +467,13 @@ class Parser:
 				if res.error: return res
 				else_case = (statements, True)
 
-				if self.current_tok.matches(TT_KEYWORD, 'END'):
+				if self.current_tok.matches(token.T_KEYWORD, 'end'):
 					res.register_advancement()
 					self.advance()
 				else:
 					return res.failure(InvalidSyntaxError(
 						self.current_tok.pos_start, self.current_tok.pos_end,
-						"Expected 'END'"
+						"Expected 'end'"
 					))
 			else:
 				expr = res.register(self.statement())
