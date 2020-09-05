@@ -25,7 +25,7 @@ Now you are ready to start! :smile:
 
 How to run your file
 =====================
-Let's imagine you want to run the code that is in the dir: ```examples/HelloWorld/code.pansy```
+Let's imagine you want to run the code that is in the dir: ```examples/HelloWorld/code.pansy```  
 You just need to use the command:  
 ```Pansy> run("examples/HelloWorld/code.pansy")```
 
