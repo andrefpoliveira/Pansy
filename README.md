@@ -52,6 +52,22 @@ Currently there are 4 data types: ```Integer```, ```Float```, ```String``` and `
 ##### List
 ```var x = [1,2,3]```
 
+#### Operations
+* ```Sum (+)```
+* ```Subtraction (-)```
+* ```Multiplication (*)```
+* ```Division (/)```
+* ```Int Division (//)```
+* ```Remainder (%)```
+
+#### Comparators
+* ```Equal (==)```
+* ```Inequal (!=)```
+* ```Greater than (>)```
+* ```Less than (<)```
+* ```Greater than or Equal to (>=)```
+* ```Less than or Equal to (<=)```
+
 #### If Statements
 ```
 var x = 0
