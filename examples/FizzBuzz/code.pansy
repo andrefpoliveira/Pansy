@@ -12,6 +12,7 @@ func fizzBuzz(limit) {
         end
 
         var i = i + 1
+    end
 }
 
 fizzBuzz(30)
