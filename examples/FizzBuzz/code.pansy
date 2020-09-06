@@ -1,4 +1,4 @@
-def fizzBuzz(limit) {
+func fizzBuzz(limit) {
     var count = 1
     while i < limit+1:
         if i%3==0 and i%5==0:
