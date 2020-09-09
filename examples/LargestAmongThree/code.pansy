@@ -1,0 +1,18 @@
+func largestNumber(num1, num2, num3){
+    if (num1 >= num2) and (num1 >= num3):
+        largest = num1
+        return largest
+    elif (num2 >= num1) and (num2 >= num3):
+        largest = num2
+        return largest
+    else:
+        largest = num3
+        return largest
+    end
+}
+
+var num1 = 5
+var num2 = 10
+var num3 = 15
+
+print(largestNumber(num1, num2, num3))

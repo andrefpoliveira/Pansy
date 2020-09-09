@@ -1,0 +1,10 @@
+func oddEven(num){
+    if(num % 2 == 0):
+        return "Even"
+    else:
+        return "Odd"
+    end
+}
+
+var num = 10
+print(oddEven(num))
