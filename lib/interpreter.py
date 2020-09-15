@@ -586,9 +586,23 @@ class BuiltInFunction(BaseFunction):
 		return RTResult().success(Number(len(list_.elements)))
 	execute_len.arg_names = ['list']
 
-	def execute_run(self, exec_ctx):
+	def execute_imports(self, exec_ctx):
+		path = exec_ctx.symbol_table.get('path')
+		name = exec_ctx.symbol_table.get('name')
+
+		exec_ctx.symbol_table.set('fn', path)
+		self.execute_run(exec_ctx, importFile=True)
+
+		return RTResult().success(Number.null)
+
+	execute_imports.arg_names = ['path', 'name']
+
+	def execute_run(self, exec_ctx, importFile=False):
 		global global_symbol_table
-		global_symbol_table = reset_global_symbol_table()
+
+		if not importFile:
+			global_symbol_table = reset_global_symbol_table()
+
 		fn = exec_ctx.symbol_table.get('fn')
 
 		if not isinstance(fn, String):
@@ -692,6 +706,7 @@ BuiltInFunction.len 			= 	BuiltInFunction("len")
 BuiltInFunction.to_str 			= 	BuiltInFunction("to_str")
 BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
 BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
+BuiltInFunction.imports			= 	BuiltInFunction("imports")
 
 
 #######################################
@@ -1015,6 +1030,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_str", BuiltInFunction.to_str)
 	global_symbol_table.set("to_int", BuiltInFunction.to_int)
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
+	global_symbol_table.set("imports", BuiltInFunction.imports)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
