@@ -590,6 +590,20 @@ class BuiltInFunction(BaseFunction):
 		path = exec_ctx.symbol_table.get('path')
 		name = exec_ctx.symbol_table.get('name')
 
+		if not isinstance(path, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+
+		if not isinstance(name, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
+
 		exec_ctx.symbol_table.set('fn', path)
 		self.execute_run(exec_ctx, importFile=True)
 
