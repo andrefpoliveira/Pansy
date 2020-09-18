@@ -1,7 +1,8 @@
 # Swap Numbers
 
 Arguments:  
-```Argument #1 - Type: Integer```\n
+```Argument #1 - Type: Integer```
+
 ```Argument #2 - Type: Integer```
   
 Return:  
