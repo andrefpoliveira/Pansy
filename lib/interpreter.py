@@ -588,19 +588,11 @@ class BuiltInFunction(BaseFunction):
 
 	def execute_imports(self, exec_ctx):
 		path = exec_ctx.symbol_table.get('path')
-		name = exec_ctx.symbol_table.get('name')
 
 		if not isinstance(path, String):
 			return RTResult().failure(errors.RTError(
 				self.pos_start, self.pos_end,
-				"First argument must be a string",
-				exec_ctx
-			))
-
-		if not isinstance(name, String):
-			return RTResult().failure(errors.RTError(
-				self.pos_start, self.pos_end,
-				"Second argument must be a string",
+				"Argument must be a string",
 				exec_ctx
 			))
 
@@ -609,7 +601,7 @@ class BuiltInFunction(BaseFunction):
 
 		return RTResult().success(Number.null)
 
-	execute_imports.arg_names = ['path', 'name']
+	execute_imports.arg_names = ['path']
 
 	def execute_run(self, exec_ctx, importFile=False):
 		global global_symbol_table

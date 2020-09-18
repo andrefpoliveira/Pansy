@@ -126,4 +126,4 @@ Pansy comes with some built-in functions (more on the way :wink:):
 * ```to_str(arg)``` - Transforms ```arg``` to a string if possible
 * ```to_int(arg)``` - Transforms ```arg``` to a integer if possible
 * ```to_float(arg)``` - Transforms ```arg``` to a float if possible
-* ```imports(arg1, arg2)``` - Imports a file in the path ```arg1``` (with the base name of ```arg2``` - still needs to be done)
+* ```imports(arg1)``` - Imports a file in the path ```arg1```
