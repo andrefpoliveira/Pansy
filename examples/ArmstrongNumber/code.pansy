@@ -1,0 +1,19 @@
+func armstrongNumber(num) {
+var temp = num
+var sum = 0
+while temp > 0:
+    var digit = temp % 10
+    var sum = sum + digit ^ 3
+    var temp = temp // 10
+end
+    
+if num == sum:
+    print("Armstrong number")
+else:
+    print("Not an Armstrong number")
+end     
+}
+
+armstrongNumber(153)
+armstrongNumber(925)
+armstrongNumber(407)
