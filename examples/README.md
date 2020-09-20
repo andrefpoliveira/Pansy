@@ -4,6 +4,7 @@ Here you can check code files submitted by others!
 |           Name           |                     Description                     | Folder       |
 |:------------------------:|:---------------------------------------------------:|--------------|
 | Area Of Triangle         |    Prints the area of triangle, given three sides   | [See here](https://github.com/UjwalKandi/Pansy/tree/Add-examples/examples/AreaOfTriangle) |
+| Armstrong Number         |     Prints whether a number is Armstrong or not     | [See here](https://github.com/UjwalKandi/Pansy/tree/Add-examples/examples/ArmstrongNumber) |
 | Celsius To Fahrenheit    |             Prints Celsius to Fahrenheit            | [See here](https://github.com/UjwalKandi/Pansy/tree/Add-examples/examples/CelsiusToFahrenheit) |
 | Fizz Buzz                |              Prints the Fizz Buzz game              | [See here](https://github.com/UjwalKandi/Pansy/tree/Add-examples/examples/FizzBuzz) |
 | Hello World              |       The basic program. Prints "Hello World!"      | [See here](https://github.com/UjwalKandi/Pansy/tree/Add-examples/examples/HelloWorld) |
