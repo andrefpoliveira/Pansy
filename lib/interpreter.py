@@ -490,6 +490,37 @@ class BuiltInFunction(BaseFunction):
 		return RTResult().success(Number.null)
 	execute_append.arg_names = ['list', 'value']
 
+	def execute_set(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+		index = exec_ctx.symbol_table.get('index')
+		value = exec_ctx.symbol_table.get('value')
+
+		if not isinstance(list_, List):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a list",
+				exec_ctx
+			))
+
+		if not isinstance(index, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a number",
+				exec_ctx
+			))
+
+		try:
+			list_.elements[index.value] = value
+		except:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Could not set that value to the list because the index is out of bounds",
+				exec_ctx
+			))
+
+		return RTResult().success(Number.null)
+	execute_set.arg_names = ['list', 'index', 'value']
+
 	def execute_pop(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 		index = exec_ctx.symbol_table.get('index')
@@ -704,6 +735,7 @@ BuiltInFunction.is_string 		=	BuiltInFunction("is_string")
 BuiltInFunction.is_list 		=	BuiltInFunction("is_list")
 BuiltInFunction.is_function 	=	BuiltInFunction("is_function")
 BuiltInFunction.append 			=	BuiltInFunction("append")
+BuiltInFunction.set 			=	BuiltInFunction("set")
 BuiltInFunction.pop 			=	BuiltInFunction("pop")
 BuiltInFunction.extend 			=	BuiltInFunction("extend")
 BuiltInFunction.get				= 	BuiltInFunction("get")
@@ -1028,6 +1060,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("is_list", BuiltInFunction.is_list)
 	global_symbol_table.set("is_function", BuiltInFunction.is_function)
 	global_symbol_table.set("append", BuiltInFunction.append)
+	global_symbol_table.set("set", BuiltInFunction.set)
 	global_symbol_table.set("pop", BuiltInFunction.pop)
 	global_symbol_table.set("extend", BuiltInFunction.extend)
 	global_symbol_table.set("get", BuiltInFunction.get)
