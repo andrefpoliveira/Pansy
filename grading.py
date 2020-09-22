@@ -30,7 +30,7 @@ codes = [f for f in os.listdir(codes_path) if os.path.isfile(os.path.join(codes_
 results = {}
 
 tests = json.loads(open(codes_path + "tests.json", "r").read())
-resultsFile = open("Challenges/Challenge1/results.txt", "w")
+resultsFile = open(codes_path + "results.txt", "w")
 
 for i in codes:
     name = i.split(".")[0]
