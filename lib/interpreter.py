@@ -726,6 +726,20 @@ class BuiltInFunction(BaseFunction):
 
 	execute_to_float.arg_names = ['number']
 
+	def execute_abs(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+
+		if not isinstance(number, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(abs(number.value)))
+	execute_abs.arg_names = ['number']
+
+
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
@@ -745,6 +759,7 @@ BuiltInFunction.to_str 			= 	BuiltInFunction("to_str")
 BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
 BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
+BuiltInFunction.abs				= 	BuiltInFunction("abs")
 
 
 #######################################
@@ -1070,6 +1085,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_int", BuiltInFunction.to_int)
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
+	global_symbol_table.set("abs", BuiltInFunction.abs)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
