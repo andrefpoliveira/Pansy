@@ -63,6 +63,9 @@ class Parser:
 			self.current_tok = self.tokens[self.tok_idx]
 
 	def parse(self):
+		if len(self.tokens) == 1 and self.tokens[0].type == token.T_EOF:
+			return ParseResult().success(nodes.ListNode([], self.tokens[0].pos_start, self.tokens[0].pos_end))
+
 		res = self.statements()
 		if not res.error and self.current_tok.type != token.T_EOF:
 			return res.failure(errors.InvalidSyntaxError(

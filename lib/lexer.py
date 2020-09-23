@@ -244,7 +244,28 @@ class Lexer:
 	def skip_comment(self):
 		self.advance()
 
-		while self.current_char != '\n':
-			self.advance()
+		if self.current_char != '/':
+			while self.current_char != '\n':
+				if self.current_char == None:
+					break
+				self.advance()
 
-		self.advance()
+			if self.current_char != None:
+				self.advance()
+
+		else:
+			self.advance()
+			found = False
+
+			while not found:
+				while self.current_char != "/":
+					if self.current_char == None:
+						found = True
+						break
+					self.advance()
+
+				if self.current_char != None:
+					self.advance()
+					if self.current_char == '@':
+						found = True
+			
