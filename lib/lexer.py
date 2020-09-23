@@ -49,7 +49,8 @@ class Lexer:
 			if self.current_char in ' \t':
 				self.advance()
 			elif self.current_char == '@':
-				self.skip_comment()
+				_, error = self.skip_comment()
+				if error: return [], error
 			elif self.current_char in ';\n':
 				tokens.append(token.Token(token.T_NEWLINE, pos_start=self.pos))
 				self.advance()
@@ -253,6 +254,8 @@ class Lexer:
 			if self.current_char != None:
 				self.advance()
 
+			return None, None
+
 		else:
 			self.advance()
 			found = False
@@ -268,4 +271,10 @@ class Lexer:
 					self.advance()
 					if self.current_char == '@':
 						found = True
+
+			if self.current_char == None:
+				return None, errors.ExpectedCharError(self.pos, self.pos,
+				"Expected '/@'. Instead found the end of the file")
+
+			return None, None
 			
