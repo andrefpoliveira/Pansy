@@ -1,5 +1,9 @@
 [![Build Status](https://semaphoreci.com/api/v1/andrefpoliveira/pansy/branches/master/badge.svg)](https://semaphoreci.com/andrefpoliveira/pansy)
 
+<p align="center">
+  <img width="20%" height="20%" src="images/Pansy.png">
+</p>
+
 # Pansy
 My own programming language, currently under development 
 
