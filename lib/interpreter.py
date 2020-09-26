@@ -393,11 +393,12 @@ class BaseFunction(Value):
 		return res.success(None)
 
 class Function(BaseFunction):
-	def __init__(self, name, body_node, arg_names, should_auto_return):
+	def __init__(self, name, body_node, arg_names, should_auto_return, module):
 		super().__init__(name)
 		self.body_node = body_node
 		self.arg_names = arg_names
 		self.should_auto_return = should_auto_return
+		self.module = module
 
 	def execute(self, args):
 		res = RTResult()
@@ -414,7 +415,7 @@ class Function(BaseFunction):
 		return res.success(ret_value)
 
 	def copy(self):
-		copy = Function(self.name, self.body_node, self.arg_names, self.should_auto_return)
+		copy = Function(self.name, self.body_node, self.arg_names, self.should_auto_return, self.module)
 		copy.set_context(self.context)
 		copy.set_pos(self.pos_start, self.pos_end)
 		return copy
@@ -1023,6 +1024,30 @@ class Interpreter:
 
 		return res.success(Number.null)
 
+	def visit_ForEachNode(self, node, context):
+		res = RTResult()
+		elements = []
+
+		for i in node.array.element_nodes:
+			context.symbol_table.set(node.var_name_tok.value, Number(i.tok.value))
+
+			value = res.register(self.visit(node.body_node, context))
+
+			if res.should_return() and not res.loop_should_break and not res.loop_should_continue: return res
+
+			if res.loop_should_continue:
+				continue
+
+			if res.loop_should_break:
+				break
+
+			elements.append(value)
+
+		return res.success(
+			Number.null if node.should_return_null else 
+			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+		)
+
 	def visit_ForNode(self, node, context):
 		res = RTResult()
 		elements = []
@@ -1107,8 +1132,9 @@ class Interpreter:
 
 		body_node = node.body_node
 		arg_names = [arg_name.value for arg_name in node.arg_name_toks]
+		module = node.module
 
-		func_value = Function(func_name, body_node, arg_names, node.should_auto_return).set_context(context).set_pos(node.pos_start, node.pos_end)
+		func_value = Function(func_name, body_node, arg_names, node.should_auto_return, module).set_context(context).set_pos(node.pos_start, node.pos_end)
 		if node.var_name_tok:
 			context.symbol_table.set(func_name, func_value)
 

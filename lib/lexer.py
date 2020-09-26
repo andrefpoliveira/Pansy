@@ -23,7 +23,8 @@ KEYWORDS = [
 	'end',
 	'break',
 	'return',
-	'continue'
+	'continue',
+	'in'
 ]
 
 #######################################
