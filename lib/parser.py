@@ -634,70 +634,109 @@ class Parser:
 		res.register_advancement()
 		self.advance()
 
-		if self.current_tok.type != token.T_EQ:
-			return res.failure(errors.InvalidSyntaxError(
-				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected '='"
-			))
-		
-		res.register_advancement()
-		self.advance()
-
-		start_value = res.register(self.expr())
-		if res.error: return res
-
-		if not self.current_tok.matches(token.T_KEYWORD, 'to'):
-			return res.failure(errors.InvalidSyntaxError(
-				self.current_tok.pos_start, self.current_tok.pos_end,
-				f"Expected 'to'"
-			))
-		
-		res.register_advancement()
-		self.advance()
-
-		end_value = res.register(self.expr())
-		if res.error: return res
-
-		if self.current_tok.matches(token.T_KEYWORD, 'step'):
+		if self.current_tok.type == token.T_EQ:
 			res.register_advancement()
 			self.advance()
 
-			step_value = res.register(self.expr())
-			if res.error: return res
-		else:
-			step_value = None
-
-		if not self.current_tok.type == token.T_COLON:
-			return res.failure(errors.InvalidSyntaxError(
-				self.current_tok.pos_start, self.current_tok.pos_end,
-				"Expected ':'"
-			))
-
-		res.register_advancement()
-		self.advance()
-
-		if self.current_tok.type == token.T_NEWLINE:
-			res.register_advancement()
-			self.advance()
-
-			body = res.register(self.statements())
+			start_value = res.register(self.expr())
 			if res.error: return res
 
-			if not self.current_tok.matches(token.T_KEYWORD, 'end'):
+			if not self.current_tok.matches(token.T_KEYWORD, 'to'):
 				return res.failure(errors.InvalidSyntaxError(
 					self.current_tok.pos_start, self.current_tok.pos_end,
-					f"Expected 'end'"
+					f"Expected 'to'"
+				))
+			
+			res.register_advancement()
+			self.advance()
+
+			end_value = res.register(self.expr())
+			if res.error: return res
+
+			if self.current_tok.matches(token.T_KEYWORD, 'step'):
+				res.register_advancement()
+				self.advance()
+
+				step_value = res.register(self.expr())
+				if res.error: return res
+			else:
+				step_value = None
+
+			if not self.current_tok.type == token.T_COLON:
+				return res.failure(errors.InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ':'"
 				))
 
 			res.register_advancement()
 			self.advance()
 
-			return res.success(nodes.ForNode(var_name, start_value, end_value, step_value, body, True))
-		
-		body = res.register(self.statement())
-		if res.error: return res
+			if self.current_tok.type == token.T_NEWLINE:
+				res.register_advancement()
+				self.advance()
 
-		return res.success(nodes.ForNode(var_name, start_value, end_value, step_value, body, False))
+				body = res.register(self.statements())
+				if res.error: return res
+
+				if not self.current_tok.matches(token.T_KEYWORD, 'end'):
+					return res.failure(errors.InvalidSyntaxError(
+						self.current_tok.pos_start, self.current_tok.pos_end,
+						f"Expected 'end'"
+					))
+
+				res.register_advancement()
+				self.advance()
+
+				return res.success(nodes.ForNode(var_name, start_value, end_value, step_value, body, True))
+			
+			body = res.register(self.statement())
+			if res.error: return res
+
+			return res.success(nodes.ForNode(var_name, start_value, end_value, step_value, body, False))
+		elif self.current_tok.matches(token.T_KEYWORD, 'in'):
+			res.register_advancement()
+			self.advance()
+
+			array = res.register(self.expr())
+			if res.error: return res
+
+			if not self.current_tok.type == token.T_COLON:
+				return res.failure(errors.InvalidSyntaxError(
+					self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ':'"
+				))
+
+			res.register_advancement()
+			self.advance()
+
+			if self.current_tok.type == token.T_NEWLINE:
+				res.register_advancement()
+				self.advance()
+
+				body = res.register(self.statements())
+				if res.error: return res
+
+				if not self.current_tok.matches(token.T_KEYWORD, 'end'):
+					return res.failure(errors.InvalidSyntaxError(
+						self.current_tok.pos_start, self.current_tok.pos_end,
+						f"Expected 'end'"
+					))
+
+				res.register_advancement()
+				self.advance()
+
+				return res.success(nodes.ForEachNode(var_name, array, body, True))
+			
+			body = res.register(self.statement())
+			if res.error: return res
+
+			return res.success(nodes.ForNode(var_name, start_value, end_value, step_value, body, False))
+		else:
+			return res.failure(errors.InvalidSyntaxError(
+				self.current_tok.pos_start, self.current_tok.pos_end,
+				f"Expected '='"
+			))
+
 
 	def while_expr(self):
 		res = ParseResult()
