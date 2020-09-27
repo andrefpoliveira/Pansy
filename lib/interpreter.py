@@ -1,4 +1,4 @@
-from lib.utils import token
+from lib.utils import token, nodes
 from lib import errors, lexer, parser
 import os
 
@@ -815,6 +815,32 @@ class BuiltInFunction(BaseFunction):
 		return RTResult().success(Number.false)
 	execute_has_key.arg_names = ['d', 'key']
 
+	def execute_range(self, exec_ctx):
+		begin = exec_ctx.symbol_table.get('begin')
+		end = exec_ctx.symbol_table.get('end')
+
+		if not isinstance(begin, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"First argument must be a number",
+				exec_ctx
+			))
+
+		if not isinstance(end, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"First argument must be a number",
+				exec_ctx
+			))
+
+		arr = []
+		for i in range(begin.value, end.value):
+			arr.append(Number(i))
+
+		return RTResult().success(List(arr))
+
+	execute_range.arg_names = ['begin', 'end']
+
 
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
@@ -837,6 +863,7 @@ BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
+BuiltInFunction.range			= 	BuiltInFunction("range")
 
 
 #######################################
@@ -1028,8 +1055,11 @@ class Interpreter:
 		res = RTResult()
 		elements = []
 
-		for i in node.array.element_nodes:
-			context.symbol_table.set(node.var_name_tok.value, Number(i.tok.value))
+		arr = res.register(self.visit(node.array, context))
+		if res.error: return res
+		
+		for i in arr.elements:
+			context.symbol_table.set(node.var_name_tok.value, Number(i.value))
 
 			value = res.register(self.visit(node.body_node, context))
 
@@ -1042,6 +1072,7 @@ class Interpreter:
 				break
 
 			elements.append(value)
+		
 
 		return res.success(
 			Number.null if node.should_return_null else 
@@ -1201,6 +1232,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)
+	global_symbol_table.set("range", BuiltInFunction.range)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
