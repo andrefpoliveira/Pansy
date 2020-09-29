@@ -1,17 +1,33 @@
-[![Build Status](https://semaphoreci.com/api/v1/andrefpoliveira/pansy/branches/master/badge.svg)](https://semaphoreci.com/andrefpoliveira/pansy)
-
 <p align="center">
   <img width="20%" height="20%" src="images/Pansy.png">
 </p>
 
-# Pansy
-My own programming language, currently under development 
+<h1 align="center">
+  Pansy
+</h1>
 
-# Discord Server
-https://discord.gg/ybHPrde
+<p align="center">
+  <a href="https://semaphoreci.com/andrefpoliveira/pansy">
+    <img src="https://semaphoreci.com/api/v1/andrefpoliveira/pansy/branches/master/badge.svg" alt="Build Status" />
+  </a>
+</p>
 
-How to start
-============
+<p align="center"> 
+  My own programming language, currently under development
+</p>
+
+<h1 align="center">
+  Discord Server
+</h1>
+<p align="center">
+  https://discord.gg/ybHPrde
+</p>
+
+
+<h1 align="center">
+  How to start
+</h1>
+
 You need to have ```Python 3.6+``` installed. If you haven't, go to [Python](https://www.python.org/downloads/) and install the latest version.
 
 Once you have Python setup, you need to clone this repository and open a terminal inside the folder. Then you must type:
@@ -30,14 +46,20 @@ Pansy> exit
 ```
 Now you are ready to start! :smile:
 
-How to run your file
-=====================
+<h1 align="center">
+  How to run your file
+</h1>
+
 Let's imagine you want to run the code that is in the dir: ```examples/HelloWorld/code.pansy```  
 You just need to use the command:  
 ```Pansy> run("examples/HelloWorld/code.pansy")```
 
 Features
-========
+
+<h1 align="center">
+  Features
+</h1>
+
 #### Assigning variables
 ```var x = <value>```
 
