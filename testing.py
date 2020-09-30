@@ -34,3 +34,4 @@ for i in test_folders:
     
 os.remove("out.txt")
 sys.stdout = orig_stdout
+print("All tests passed!")

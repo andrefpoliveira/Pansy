@@ -1,5 +1,32 @@
-[![Build Status](https://semaphoreci.com/api/v1/andrefpoliveira/pansy/branches/master/badge.svg)](https://semaphoreci.com/andrefpoliveira/pansy)
+<p align="center">
+  <img width="20%" height="20%" src="images/Pansy.png">
+</p>
 
+<h1 align="center">
+  Pansy
+</h1>
+
+<p align="center">
+  <a href="https://semaphoreci.com/andrefpoliveira/pansy">
+    <img src="https://semaphoreci.com/api/v1/andrefpoliveira/pansy/branches/master/badge.svg" alt="Build Status" />
+  </a>
+</p>
+
+<p align="center"> 
+  My own programming language, currently under development
+</p>
+
+<h1 align="center">
+  Discord Server
+</h1>
+<p align="center">
+  https://discord.gg/ybHPrde
+</p>
+
+
+<h1 align="center">
+  How to start
+</h1>
 
 Pansy Documentation
 ===================
