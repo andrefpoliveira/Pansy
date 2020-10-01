@@ -1,0 +1,9 @@
+func Sqrt(num) {
+var num_sqrt = num ^ 0.5
+print(num_sqrt)
+}
+
+Sqrt(4)
+Sqrt(25)
+Sqrt(81)
+Sqrt(100)

@@ -1,0 +1,11 @@
+func SwapNum(x,y){
+
+var temp = x
+var x = y
+var y = temp
+print(x)
+print(y)
+
+}
+
+SwapNum(5,10)

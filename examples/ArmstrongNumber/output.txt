@@ -1,0 +1,3 @@
+Armstrong number
+Not an Armstrong number
+Armstrong number

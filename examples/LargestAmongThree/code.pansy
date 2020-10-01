@@ -1,0 +1,16 @@
+func largestAmongThree(num1, num2, num3) {
+ 
+var largest = 0
+if (num1 >= num2) and (num1 >= num3):
+   print(num1)
+elif (num2 >= num1) and (num2 >= num3):
+   print(num2)
+else:
+   print(num3)
+end 
+
+}
+
+largestAmongThree(10, 14, 12)
+largestAmongThree(230, 550, 300)
+largestAmongThree(1.5, 3.6, 9.4)
