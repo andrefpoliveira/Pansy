@@ -1,4 +1,4 @@
-32.0                @ freezing/melting point of water
-69.80000000000001   @ room temperature
-98.60000000000001   @ average body temperature
-212.0               @ boiling point of water
+32.0                
+69.80000000000001   
+98.60000000000001   
+212.0               
