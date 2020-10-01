@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="20%" height="20%" src="images/Pansy.png">
+  <img width="30%" height="30%" src="images/Pansy.png">
 </p>
 
 <h1 align="center">
