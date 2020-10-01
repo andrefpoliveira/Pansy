@@ -1,0 +1,9 @@
+func kmsToMiles(kilometers){
+var conv_fac = 0.621371
+var miles = kilometers * conv_fac
+print(miles)
+}
+
+kmsToMiles(1)
+kmsToMiles(10)
+kmsToMiles(17)
