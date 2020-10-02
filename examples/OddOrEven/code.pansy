@@ -1,0 +1,15 @@
+func checkNumber(num){
+    var flag = num%2
+	if flag == 0:
+		print("is an even number")
+	elif flag == 1:
+		print("is an odd number")
+	else:
+		print("Error, Invalid input")
+    end
+    
+}
+
+checkNumber(20)
+checkNumber(54)
+checkNumber(33)
