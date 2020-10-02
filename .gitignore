@@ -1,4 +1,6 @@
 __pycache__/
+lib/__pycache__/
+lib/utils/__pycache__/
 _build/
 Challenge1/
 Challenge2/
