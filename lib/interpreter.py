@@ -841,6 +841,50 @@ class BuiltInFunction(BaseFunction):
 
 	execute_range.arg_names = ['begin', 'end']
 
+	def execute_min(self, exec_ctx):
+		numberA = exec_ctx.symbol_table.get('numberA')
+		numberB = exec_ctx.symbol_table.get('numberB')
+
+		if not isinstance(numberA, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+		
+		if not isinstance(numberB, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(min(numberA.value, numberB.value)))
+
+	execute_min.arg_names = ['numberA','numberB']
+
+	def execute_max(self, exec_ctx):
+		a = exec_ctx.symbol_table.get('b')
+		b = exec_ctx.symbol_table.get('a')
+
+		if not isinstance(a, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+		
+		if not isinstance(b, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(max(a.value, b.value)))
+
+	execute_max.arg_names = ['a','b']
+
 
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
@@ -864,6 +908,8 @@ BuiltInFunction.imports			= 	BuiltInFunction("imports")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
+BuiltInFunction.min				= 	BuiltInFunction("min")
+BuiltInFunction.max				= 	BuiltInFunction("max")
 
 
 #######################################
@@ -1233,6 +1279,8 @@ def reset_global_symbol_table():
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)
 	global_symbol_table.set("range", BuiltInFunction.range)
+	global_symbol_table.set("min", BuiltInFunction.min)
+	global_symbol_table.set("max", BuiltInFunction.max)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
