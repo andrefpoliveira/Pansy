@@ -491,7 +491,6 @@ class BuiltInFunction(BaseFunction):
 	execute_is_function.arg_names = ['value']
 
 	def execute_append(self, exec_ctx):
-		print(exec_ctx.symbol_table.get('string'))
 		list_ = exec_ctx.symbol_table.get('list')
 		value = exec_ctx.symbol_table.get('value')
 
