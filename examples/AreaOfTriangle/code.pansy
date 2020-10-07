@@ -1,0 +1,10 @@
+func areaOfTriangle(a,b,c){
+var s = (a + b + c) / 2
+var area = (s*(s-a)*(s-b)*(s-c)) ^ 0.5
+print(area)
+}
+
+areaOfTriangle(5,6,7)
+areaOfTriangle(12,16,20)
+areaOfTriangle(14,7,9)
+areaOfTriangle(41,15,28)

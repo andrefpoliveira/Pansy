@@ -12,7 +12,7 @@ def main(run_test=None):
 
         if text == "exit": break
         if text.strip() == '': continue
-        result, error = run('<stdin>', text)
+        _, error = run('<stdin>', text)
 
         if error:
             print(error.as_string())

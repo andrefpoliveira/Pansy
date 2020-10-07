@@ -1,4 +1,4 @@
-from lib.utils import token
+from lib.utils import token, nodes
 from lib import errors, lexer, parser
 import os
 
@@ -166,6 +166,20 @@ class List(Value):
 
 	def __repr__(self):
 		return f'[{", ".join([str(x) for x in self.elements])}]'
+
+class Dict(Value):
+	def __init__(self, elements):
+		super().__init__()
+		self.elements = elements
+
+	def copy(self):
+		copy = Dict(self.elements)
+		copy.set_context(self.context)
+		copy.set_pos(self.pos_start, self.pos_end)
+		return copy
+
+	def __repr__(self):
+		return str(self.elements)
 
 class Number(Value):
 	def __init__(self, value):
@@ -379,11 +393,12 @@ class BaseFunction(Value):
 		return res.success(None)
 
 class Function(BaseFunction):
-	def __init__(self, name, body_node, arg_names, should_auto_return):
+	def __init__(self, name, body_node, arg_names, should_auto_return, module):
 		super().__init__(name)
 		self.body_node = body_node
 		self.arg_names = arg_names
 		self.should_auto_return = should_auto_return
+		self.module = module
 
 	def execute(self, args):
 		res = RTResult()
@@ -400,7 +415,7 @@ class Function(BaseFunction):
 		return res.success(ret_value)
 
 	def copy(self):
-		copy = Function(self.name, self.body_node, self.arg_names, self.should_auto_return)
+		copy = Function(self.name, self.body_node, self.arg_names, self.should_auto_return, self.module)
 		copy.set_context(self.context)
 		copy.set_pos(self.pos_start, self.pos_end)
 		return copy
@@ -504,6 +519,55 @@ class BuiltInFunction(BaseFunction):
 		
 		return RTResult().success(String(res_str))
 	execute_concat.arg_names = ['string1', 'string2']
+	
+	def execute_set(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+		index = exec_ctx.symbol_table.get('index')
+		value = exec_ctx.symbol_table.get('value')
+
+		if not isinstance(list_, List) and not isinstance(list_, Dict):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a list",
+				exec_ctx
+			))
+
+		if isinstance(list_, List):
+			if not isinstance(index, Number):
+				return RTResult().failure(errors.RTError(
+					self.pos_start, self.pos_end,
+					"Second argument must be a number",
+					exec_ctx
+				))
+
+			try:
+				list_.elements[index.value] = value
+			except:
+				return RTResult().failure(errors.RTError(
+					self.pos_start, self.pos_end,
+					"Could not set that value to the list because the index is out of bounds",
+					exec_ctx
+				))
+
+			return RTResult().success(Number.null)
+
+		if not isinstance(index, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
+
+		for k in list_.elements:
+			if index.value == k.value:
+				list_.elements[k] = value
+				return RTResult().success(Number.null)
+		
+		list_.elements[index] = value
+
+		return RTResult().success(Number.null)
+
+	execute_set.arg_names = ['list', 'index', 'value']
 
 	def execute_pop(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
@@ -563,28 +627,47 @@ class BuiltInFunction(BaseFunction):
 		list_ = exec_ctx.symbol_table.get('list')
 		index = exec_ctx.symbol_table.get('index')
 
-		if not isinstance(list_, List):
+		if not isinstance(list_, List) and not isinstance(list_, Dict):
 			return RTResult().failure(errors.RTError(
 				self.pos_start, self.pos_end,
-				"First argument must be a list",
+				"First argument must be a list or a dictionary",
 				exec_ctx
 			))
 
-		if not isinstance(index, Number):
-			return RTResult().failure(errors.RTError(
-				self.pos_start, self.pos_end,
-				"Second argument must be a number",
-				exec_ctx
-			))
+		if isinstance(list_, List):
+			if not isinstance(index, Number):
+				return RTResult().failure(errors.RTError(
+					self.pos_start, self.pos_end,
+					"Second argument must be a number",
+					exec_ctx
+				))
 
-		try:
-			return RTResult().success(list_.elements[index.value])
-		except:
-			return RTResult().failure(errors.RTError(
-				self.pos_start, self.pos_end,
-				"Element at this index could not be retrieved because the index is out of bounds",
-				exec_ctx
-			))
+			try:
+				return RTResult().success(list_.elements[index.value])
+			except:
+				return RTResult().failure(errors.RTError(
+					self.pos_start, self.pos_end,
+					"Element at this index could not be retrieved because the index is out of bounds",
+					exec_ctx
+				))
+
+		if not isinstance(index, String):
+				return RTResult().failure(errors.RTError(
+					self.pos_start, self.pos_end,
+					"Second argument must be a string",
+					exec_ctx
+				))
+
+		for k in list_.elements:
+			if index.value == k.value:
+				return RTResult().success(list_.elements[k])
+
+		return RTResult().failure(errors.RTError(
+			self.pos_start, self.pos_end,
+			"Could not get any value because that key doesn't exist",
+			exec_ctx
+		))
+		
 
 	execute_get.arg_names = ['list', 'index']
 
@@ -603,19 +686,11 @@ class BuiltInFunction(BaseFunction):
 
 	def execute_imports(self, exec_ctx):
 		path = exec_ctx.symbol_table.get('path')
-		name = exec_ctx.symbol_table.get('name')
 
 		if not isinstance(path, String):
 			return RTResult().failure(errors.RTError(
 				self.pos_start, self.pos_end,
-				"First argument must be a string",
-				exec_ctx
-			))
-
-		if not isinstance(name, String):
-			return RTResult().failure(errors.RTError(
-				self.pos_start, self.pos_end,
-				"Second argument must be a string",
+				"Argument must be a string",
 				exec_ctx
 			))
 
@@ -624,7 +699,7 @@ class BuiltInFunction(BaseFunction):
 
 		return RTResult().success(Number.null)
 
-	execute_imports.arg_names = ['path', 'name']
+	execute_imports.arg_names = ['path']
 
 	def execute_run(self, exec_ctx, importFile=False):
 		global global_symbol_table
@@ -718,6 +793,129 @@ class BuiltInFunction(BaseFunction):
 
 	execute_to_float.arg_names = ['number']
 
+	def execute_abs(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+
+		if not isinstance(number, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(abs(number.value)))
+	execute_abs.arg_names = ['number']
+
+	def execute_has_key(self, exec_ctx):
+		d = exec_ctx.symbol_table.get('d')
+		key = exec_ctx.symbol_table.get('key')
+
+		if not isinstance(d, Dict):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"First argument must be a dictionary",
+				exec_ctx
+			))
+
+		if not isinstance(key, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Second argument must be a string",
+				exec_ctx
+			))
+
+		for k in d.elements:
+			if key.value == k.value:
+				return RTResult().success(Number.true)
+		return RTResult().success(Number.false)
+	execute_has_key.arg_names = ['d', 'key']
+
+	def execute_range(self, exec_ctx):
+		begin = exec_ctx.symbol_table.get('begin')
+		end = exec_ctx.symbol_table.get('end')
+
+		if not isinstance(begin, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"First argument must be a number",
+				exec_ctx
+			))
+
+		if not isinstance(end, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"First argument must be a number",
+				exec_ctx
+			))
+
+		arr = []
+		for i in range(begin.value, end.value):
+			arr.append(Number(i))
+
+		return RTResult().success(List(arr))
+
+	execute_range.arg_names = ['begin', 'end']
+
+	def execute_min(self, exec_ctx):
+		numberA = exec_ctx.symbol_table.get('numberA')
+		numberB = exec_ctx.symbol_table.get('numberB')
+
+		if not isinstance(numberA, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+		
+		if not isinstance(numberB, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(min(numberA.value, numberB.value)))
+
+	execute_min.arg_names = ['numberA','numberB']
+
+	def execute_max(self, exec_ctx):
+		a = exec_ctx.symbol_table.get('b')
+		b = exec_ctx.symbol_table.get('a')
+
+		if not isinstance(a, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+		
+		if not isinstance(b, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(max(a.value, b.value)))
+
+	execute_max.arg_names = ['a','b']
+
+	def execute_oct(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+
+
+		if not isinstance(number, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(oct(number.value)))
+
+	execute_oct.arg_names = ['number']
+
+
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
@@ -727,6 +925,7 @@ BuiltInFunction.is_string 		=	BuiltInFunction("is_string")
 BuiltInFunction.is_list 		=	BuiltInFunction("is_list")
 BuiltInFunction.is_function 	=	BuiltInFunction("is_function")
 BuiltInFunction.append 			=	BuiltInFunction("append")
+BuiltInFunction.set 			=	BuiltInFunction("set")
 BuiltInFunction.pop 			=	BuiltInFunction("pop")
 BuiltInFunction.extend 			=	BuiltInFunction("extend")
 BuiltInFunction.get				= 	BuiltInFunction("get")
@@ -737,6 +936,12 @@ BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
 BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
 BuiltInFunction.concat			= 	BuiltInFunction("concat")
+BuiltInFunction.abs				= 	BuiltInFunction("abs")
+BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
+BuiltInFunction.range			= 	BuiltInFunction("range")
+BuiltInFunction.min				= 	BuiltInFunction("min")
+BuiltInFunction.max				= 	BuiltInFunction("max")
+BuiltInFunction.oct				= 	BuiltInFunction("oct")
 
 
 #######################################
@@ -806,6 +1011,18 @@ class Interpreter:
 
 		return res.success(
 			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+		)
+
+	def visit_DictNode(self, node, context):
+		res = RTResult()
+		dict = {}
+
+		for key in node.element_nodes:
+			dict[res.register(self.visit(key, context))] = res.register(self.visit(node.element_nodes[key], context))
+			if res.should_return(): return res
+
+		return res.success(
+			Dict(dict).set_context(context).set_pos(node.pos_start, node.pos_end)
 		)
 
 	def visit_VarAccessNode(self, node, context):
@@ -912,6 +1129,34 @@ class Interpreter:
 
 		return res.success(Number.null)
 
+	def visit_ForEachNode(self, node, context):
+		res = RTResult()
+		elements = []
+
+		arr = res.register(self.visit(node.array, context))
+		if res.error: return res
+		
+		for i in arr.elements:
+			context.symbol_table.set(node.var_name_tok.value, Number(i.value))
+
+			value = res.register(self.visit(node.body_node, context))
+
+			if res.should_return() and not res.loop_should_break and not res.loop_should_continue: return res
+
+			if res.loop_should_continue:
+				continue
+
+			if res.loop_should_break:
+				break
+
+			elements.append(value)
+		
+
+		return res.success(
+			Number.null if node.should_return_null else 
+			List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+		)
+
 	def visit_ForNode(self, node, context):
 		res = RTResult()
 		elements = []
@@ -996,8 +1241,9 @@ class Interpreter:
 
 		body_node = node.body_node
 		arg_names = [arg_name.value for arg_name in node.arg_name_toks]
+		module = node.module
 
-		func_value = Function(func_name, body_node, arg_names, node.should_auto_return).set_context(context).set_pos(node.pos_start, node.pos_end)
+		func_value = Function(func_name, body_node, arg_names, node.should_auto_return, module).set_context(context).set_pos(node.pos_start, node.pos_end)
 		if node.var_name_tok:
 			context.symbol_table.set(func_name, func_value)
 
@@ -1052,6 +1298,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("is_list", BuiltInFunction.is_list)
 	global_symbol_table.set("is_function", BuiltInFunction.is_function)
 	global_symbol_table.set("append", BuiltInFunction.append)
+	global_symbol_table.set("set", BuiltInFunction.set)
 	global_symbol_table.set("pop", BuiltInFunction.pop)
 	global_symbol_table.set("extend", BuiltInFunction.extend)
 	global_symbol_table.set("get", BuiltInFunction.get)
@@ -1062,6 +1309,12 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
 	global_symbol_table.set("concat", BuiltInFunction.concat)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
+	global_symbol_table.set("abs", BuiltInFunction.abs)
+	global_symbol_table.set("has_key", BuiltInFunction.has_key)
+	global_symbol_table.set("range", BuiltInFunction.range)
+	global_symbol_table.set("min", BuiltInFunction.min)
+	global_symbol_table.set("max", BuiltInFunction.max)
+	global_symbol_table.set("oct", BuiltInFunction.oct)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()

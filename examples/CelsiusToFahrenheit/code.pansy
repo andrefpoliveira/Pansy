@@ -1,0 +1,10 @@
+func celsiusToFahrenheit(celsius){
+var fahrenheit = (celsius * 1.8) + 32
+print(fahrenheit)
+}
+
+celsiusToFahrenheit(0)
+celsiusToFahrenheit(21)
+celsiusToFahrenheit(37)
+celsiusToFahrenheit(100)
+
