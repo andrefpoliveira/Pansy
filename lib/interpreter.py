@@ -514,11 +514,47 @@ class BuiltInFunction(BaseFunction):
 				"First argument must be a string",
 				exec_ctx
 			))
+		if not isinstance(str2, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
 		res_str = str1.value + str2.value
 		
 		return RTResult().success(String(res_str))
 	execute_concat.arg_names = ['string1', 'string2']
-	
+
+## Added string split_char function
+
+	def execute_split_char(self, exec_ctx):
+		string = exec_ctx.symbol_table.get('string')
+		char = exec_ctx.symbol_table.get('char')
+		if not isinstance(string, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+		if not isinstance(char, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
+		if len(list(char.value)) > 1:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a single character string",
+				exec_ctx
+			))
+		res_list = (string.value).split(char.value)
+		
+		return RTResult().success(List(res_list))
+	execute_split_char.arg_names = ['string', 'char']
+
+## Add ends
+
 	def execute_set(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 		index = exec_ctx.symbol_table.get('index')
@@ -954,6 +990,7 @@ BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
 BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
 BuiltInFunction.concat			= 	BuiltInFunction("concat")
+BuiltInFunction.split_char		= 	BuiltInFunction("split_char")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
@@ -1327,6 +1364,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_int", BuiltInFunction.to_int)
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
 	global_symbol_table.set("concat", BuiltInFunction.concat)
+	global_symbol_table.set("split_char", BuiltInFunction.split_char)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)
