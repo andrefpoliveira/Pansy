@@ -505,6 +505,20 @@ class BuiltInFunction(BaseFunction):
 		return RTResult().success(Number.null)
 	execute_append.arg_names = ['list', 'value']
 
+	def execute_concat(self, exec_ctx):
+		str1 = exec_ctx.symbol_table.get('string1')
+		str2 = exec_ctx.symbol_table.get('string2')
+		if not isinstance(str1, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+		res_str = str1.value + str2.value
+		
+		return RTResult().success(String(res_str))
+	execute_concat.arg_names = ['string1', 'string2']
+	
 	def execute_set(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 		index = exec_ctx.symbol_table.get('index')
@@ -885,6 +899,40 @@ class BuiltInFunction(BaseFunction):
 
 	execute_max.arg_names = ['a','b']
 
+	def execute_oct(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+
+
+		if not isinstance(number, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		return RTResult().success(Number(oct(number.value)))
+
+	execute_oct.arg_names = ['number']
+
+
+	def execute_fact(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+		if not isinstance(number, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+		fact = 1;
+		for i in range(1, number.value + 1):
+			fact = fact*i
+
+		number.value = fact	
+
+		return RTResult().success(Number(number.value))
+		
+	execute_fact.arg_names = ['number']
+
 
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
@@ -905,11 +953,14 @@ BuiltInFunction.to_str 			= 	BuiltInFunction("to_str")
 BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
 BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
+BuiltInFunction.concat			= 	BuiltInFunction("concat")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
 BuiltInFunction.min				= 	BuiltInFunction("min")
 BuiltInFunction.max				= 	BuiltInFunction("max")
+BuiltInFunction.oct				= 	BuiltInFunction("oct")
+BuiltInFunction.fact            =   BuiltInFunction("fact")
 
 
 #######################################
@@ -1275,12 +1326,15 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_str", BuiltInFunction.to_str)
 	global_symbol_table.set("to_int", BuiltInFunction.to_int)
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
+	global_symbol_table.set("concat", BuiltInFunction.concat)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)
 	global_symbol_table.set("range", BuiltInFunction.range)
 	global_symbol_table.set("min", BuiltInFunction.min)
 	global_symbol_table.set("max", BuiltInFunction.max)
+	global_symbol_table.set("oct", BuiltInFunction.oct)
+	global_symbol_table.set("fact", BuiltInFunction.fact)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()

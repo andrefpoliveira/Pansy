@@ -1,7 +1,7 @@
 # LINEAR SEARCH
 
 Arguments:  
-```Argument #1 - Type: Integer```
+```Argument #1 - Type: List```
 
 ```Argument #2 - Type: Integer```
   

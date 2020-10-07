@@ -21,3 +21,4 @@ List Of Builtin Functions
 - ``to_str(arg)``: Transforms ``arg`` to a string if possible.
 - ``to_int(arg)``: Transforms ``arg`` to a integer if possible.
 - ``to_float(arg)``: Transforms ``arg`` to a float if possible.
+- ``concat(arg1, arg2)``: Performs concatenation of two strings ``arg1`` and ``arg2``.
