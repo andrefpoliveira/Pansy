@@ -886,6 +886,28 @@ class BuiltInFunction(BaseFunction):
 	execute_max.arg_names = ['a','b']
 
 
+	def execute_fact(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+		if not isinstance(number, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+		fact = 1;
+		if number.value == 0:
+			fact = 1
+		
+		for i in range(1, number.value + 1):
+			fact = fact*i
+
+		number.value = fact	
+
+		return RTResult().success(Number(number.value))
+		
+	execute_fact.arg_names = ['number']
+
+
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
@@ -910,6 +932,7 @@ BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
 BuiltInFunction.min				= 	BuiltInFunction("min")
 BuiltInFunction.max				= 	BuiltInFunction("max")
+BuiltInFunction.fact            =   BuiltInFunction("fact")
 
 
 #######################################
@@ -1281,6 +1304,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("range", BuiltInFunction.range)
 	global_symbol_table.set("min", BuiltInFunction.min)
 	global_symbol_table.set("max", BuiltInFunction.max)
+	global_symbol_table.set("fact", BuiltInFunction.fact)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
