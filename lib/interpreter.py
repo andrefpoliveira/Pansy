@@ -932,6 +932,8 @@ BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
 BuiltInFunction.min				= 	BuiltInFunction("min")
 BuiltInFunction.max				= 	BuiltInFunction("max")
+
+
 BuiltInFunction.fact            =   BuiltInFunction("fact")
 
 
@@ -1304,6 +1306,8 @@ def reset_global_symbol_table():
 	global_symbol_table.set("range", BuiltInFunction.range)
 	global_symbol_table.set("min", BuiltInFunction.min)
 	global_symbol_table.set("max", BuiltInFunction.max)
+	
+	
 	global_symbol_table.set("fact", BuiltInFunction.fact)
 	return global_symbol_table
 
