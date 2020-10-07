@@ -476,6 +476,7 @@ class BuiltInFunction(BaseFunction):
 	execute_is_function.arg_names = ['value']
 
 	def execute_append(self, exec_ctx):
+		print(exec_ctx.symbol_table.get('string'))
 		list_ = exec_ctx.symbol_table.get('list')
 		value = exec_ctx.symbol_table.get('value')
 
@@ -489,6 +490,20 @@ class BuiltInFunction(BaseFunction):
 		list_.elements.append(value)
 		return RTResult().success(Number.null)
 	execute_append.arg_names = ['list', 'value']
+
+	def execute_concat(self, exec_ctx):
+		str1 = exec_ctx.symbol_table.get('string1')
+		str2 = exec_ctx.symbol_table.get('string2')
+		if not isinstance(str1, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+		res_str = str1.value + str2.value
+		
+		return RTResult().success(String(res_str))
+	execute_concat.arg_names = ['string1', 'string2']
 
 	def execute_pop(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
@@ -721,6 +736,7 @@ BuiltInFunction.to_str 			= 	BuiltInFunction("to_str")
 BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
 BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
+BuiltInFunction.concat			= 	BuiltInFunction("concat")
 
 
 #######################################
@@ -1044,6 +1060,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_str", BuiltInFunction.to_str)
 	global_symbol_table.set("to_int", BuiltInFunction.to_int)
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
+	global_symbol_table.set("concat", BuiltInFunction.concat)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	return global_symbol_table
 

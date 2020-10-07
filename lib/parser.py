@@ -557,11 +557,11 @@ class Parser:
 				self.current_tok.pos_start, self.current_tok.pos_end,
 				"Expected ':'"
 			))
-
+		prev_token = self.current_tok
 		res.register_advancement()
 		self.advance()
-
-		if self.current_tok.type == token.T_NEWLINE:
+		
+		if (self.current_tok.type == token.T_NEWLINE and prev_token.type != token.T_COLON):
 			res.register_advancement()
 			self.advance()
 

@@ -242,6 +242,7 @@ class Lexer:
 		return token.Token(tok_type, pos_start=pos_start, pos_end=self.pos)
 
 	def skip_comment(self):
+		
 		self.advance()
 
 		while self.current_char != '\n':
