@@ -1,0 +1,15 @@
+func LinearSearch(lst,number){
+    var length  =  len(lst)
+    var index = 0
+
+    for i = 0 to length-1 :
+        var no = get(lst,i)
+        if number == no:
+            return i+1
+        end    
+    end 
+    return index     
+}
+var x = [7,3,56,323,546,32,1]
+var number = 323
+print(LinearSearch(x,number))
