@@ -561,7 +561,7 @@ class Parser:
 		res.register_advancement()
 		self.advance()
 		
-		if (self.current_tok.type == token.T_NEWLINE and prev_token.type != token.T_COLON):
+		if self.current_tok.type == token.T_NEWLINE:
 			res.register_advancement()
 			self.advance()
 
