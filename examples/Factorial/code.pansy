@@ -1,0 +1,11 @@
+func factorial(n){
+    var f = 1
+    var i = 0
+    for i = 1 to n+1:
+        var f = f * i
+    end
+    return f
+}
+
+var n = 0
+print(factorial(20))
