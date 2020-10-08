@@ -5,7 +5,7 @@ Quickstart
 1. Install Python 3.6+.
 =======================
 Pansy needs Python to run properly. If you don't have python installed then
-go to [Python](https://www.python.org/downloads/) and install the latest version.
+go to `Python<https://www.python.org/downloads/>`_and install the latest version.
 Once you have Python setup, you need to clone this repository and open a terminal inside the folder.
 Then you must type:
 
