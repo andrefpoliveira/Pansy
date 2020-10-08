@@ -570,6 +570,79 @@ class BuiltInFunction(BaseFunction):
 	execute_split_char.arg_names = ['string', 'char']
 
 ## Add ends
+	def execute_slice(self, exec_ctx):
+		string = exec_ctx.symbol_table.get('string')
+		start = exec_ctx.symbol_table.get('start')
+		end = exec_ctx.symbol_table.get('end')
+		if not isinstance(string, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+		if not isinstance(start, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a number",
+				exec_ctx
+			))
+		if not isinstance(end, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Third argument must be a number",
+				exec_ctx
+			))
+		if start.value > len(list(string.value)):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument exceeds the maximum string length",
+				exec_ctx
+			))
+		if end.value > len(list(string.value)):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Third argument exceeds the maximum string length",
+				exec_ctx
+			))
+		if end.value < start.value:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Third argument exceeds the start index value",
+				exec_ctx
+			))
+
+		res_list = "" . join(list(string.value[start.value:end.value]))
+		
+		return RTResult().success(String(res_list))
+	execute_slice.arg_names = ['string', 'start', 'end']
+
+	def execute_frequency(self, exec_ctx):
+		string = exec_ctx.symbol_table.get('string')
+		char = exec_ctx.symbol_table.get('char')
+		if not isinstance(string, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+		if not isinstance(char, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
+		if len(list(char.value)) > 1:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a single character string",
+				exec_ctx
+			))
+
+		str_ = list(string.value)
+		res_count = str_.count(char.value)
+		
+		return RTResult().success(Number(res_count))
+	execute_frequency.arg_names = ['string', 'char']
 
 	def execute_set(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
@@ -986,6 +1059,22 @@ class BuiltInFunction(BaseFunction):
 	execute_fact.arg_names = ['number']
 
 
+	def execute_sort(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+		if not isinstance(list_, List):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Argument must be a list",
+				exec_ctx
+			))
+
+		length = len(list_.elements)
+		arr = [list_.elements[i].value for i in range(0,length)]
+
+		return RTResult().success((List(sorted(arr))))
+
+	execute_sort.arg_names = ['list']
+
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
 BuiltInFunction.clear 			=	BuiltInFunction("clear")
@@ -1006,6 +1095,8 @@ BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
 BuiltInFunction.concat			= 	BuiltInFunction("concat")
 BuiltInFunction.split_char		= 	BuiltInFunction("split_char")
+BuiltInFunction.slice			= 	BuiltInFunction("slice")
+BuiltInFunction.frequency		= 	BuiltInFunction("frequency")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
@@ -1013,8 +1104,7 @@ BuiltInFunction.min				= 	BuiltInFunction("min")
 BuiltInFunction.max				= 	BuiltInFunction("max")
 BuiltInFunction.oct				= 	BuiltInFunction("oct")
 BuiltInFunction.fact            =   BuiltInFunction("fact")
-
-
+BuiltInFunction.sort            =   BuiltInFunction("sort")
 #######################################
 # CONTEXT
 #######################################
@@ -1400,6 +1490,8 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
 	global_symbol_table.set("concat", BuiltInFunction.concat)
 	global_symbol_table.set("split_char", BuiltInFunction.split_char)
+	global_symbol_table.set("slice", BuiltInFunction.slice)
+	global_symbol_table.set("frequency", BuiltInFunction.frequency)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)
@@ -1408,6 +1500,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("max", BuiltInFunction.max)
 	global_symbol_table.set("oct", BuiltInFunction.oct)
 	global_symbol_table.set("fact", BuiltInFunction.fact)
+	global_symbol_table.set("sort", BuiltInFunction.sort)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
