@@ -962,7 +962,6 @@ BuiltInFunction.max				= 	BuiltInFunction("max")
 BuiltInFunction.oct				= 	BuiltInFunction("oct")
 BuiltInFunction.fact            =   BuiltInFunction("fact")
 
-
 #######################################
 # CONTEXT
 #######################################
@@ -1335,6 +1334,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("max", BuiltInFunction.max)
 	global_symbol_table.set("oct", BuiltInFunction.oct)
 	global_symbol_table.set("fact", BuiltInFunction.fact)
+	global_symbol_table.set("sort", BuiltInFunction.sort)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
