@@ -1020,7 +1020,7 @@ class BuiltInFunction(BaseFunction):
 				f"Argument must be a number",
 				exec_ctx
 			))
-		fact = 1;
+		fact = 1
 		for i in range(1, number.value + 1):
 			fact = fact*i
 
@@ -1029,7 +1029,6 @@ class BuiltInFunction(BaseFunction):
 		return RTResult().success(Number(number.value))
 		
 	execute_fact.arg_names = ['number']
-
 
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
