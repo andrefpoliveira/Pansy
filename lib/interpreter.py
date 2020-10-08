@@ -604,6 +604,12 @@ class BuiltInFunction(BaseFunction):
 				"Third argument exceeds the maximum string length",
 				exec_ctx
 			))
+		if end.value < start.value:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Third argument exceeds the start index value",
+				exec_ctx
+			))
 
 		res_list = "" . join(list(string.value[start.value:end.value]))
 		
