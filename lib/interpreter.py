@@ -376,36 +376,50 @@ class BaseFunction(Value):
 		
 		return res.success(None)
 
-	def populate_args(self, arg_names, args, exec_ctx):
+	def populate_args(self, arg_names, args, optional_arg_names, optional_arg_values, exec_ctx):
 		for i in range(len(args)):
 			arg_name = arg_names[i]
 			arg_value = args[i]
 			arg_value.set_context(exec_ctx)
 			exec_ctx.symbol_table.set(arg_name, arg_value)
 
-	def check_and_populate_args(self, arg_names, args, exec_ctx):
+		for i in range(len(optional_arg_values)):
+			arg_name = optional_arg_names[i]
+			arg_value = optional_arg_values[i]
+			arg_value.set_context(exec_ctx)
+			exec_ctx.symbol_table.set(arg_name, arg_value)
+
+	def check_and_populate_args(self, arg_names, optional_arg_names, optional_arg_values, args, exec_ctx):
 		res = RTResult()
 
 		res.register(self.check_args(arg_names, args))
 		if res.should_return(): return res
-		self.populate_args(arg_names, args, exec_ctx)
+		self.populate_args(arg_names, args, optional_arg_names, optional_arg_values, exec_ctx)
 
 		return res.success(None)
 
 class Function(BaseFunction):
-	def __init__(self, name, body_node, arg_names, should_auto_return, module):
+	def __init__(self, name, body_node, arg_names, optional_arg_names, optional_arg_values, should_auto_return, module):
 		super().__init__(name)
 		self.body_node = body_node
 		self.arg_names = arg_names
+		self.optional_arg_names = optional_arg_names
+		self.optional_arg_values = optional_arg_values
 		self.should_auto_return = should_auto_return
 		self.module = module
 
-	def execute(self, args):
+	def execute(self, args, optional_arg_names, optional_arg_values):
 		res = RTResult()
 		interpreter = Interpreter()
 		exec_ctx = self.generate_new_context()
 
-		res.register(self.check_and_populate_args(self.arg_names, args, exec_ctx))
+		for i in range(len(optional_arg_names)):
+			for j in range(len(self.optional_arg_names)):
+				if optional_arg_names[i] == self.optional_arg_names[j]:
+					self.optional_arg_values[j] = optional_arg_values[i]
+					break
+
+		res.register(self.check_and_populate_args(self.arg_names, self.optional_arg_names, self.optional_arg_values, args, exec_ctx))
 		if res.should_return(): return res
 
 		value = res.register(interpreter.visit(self.body_node, exec_ctx))
@@ -415,7 +429,7 @@ class Function(BaseFunction):
 		return res.success(ret_value)
 
 	def copy(self):
-		copy = Function(self.name, self.body_node, self.arg_names, self.should_auto_return, self.module)
+		copy = Function(self.name, self.body_node, self.arg_names, self.optional_arg_names, self.optional_arg_values, self.should_auto_return, self.module)
 		copy.set_context(self.context)
 		copy.set_pos(self.pos_start, self.pos_end)
 		return copy
@@ -426,15 +440,17 @@ class Function(BaseFunction):
 class BuiltInFunction(BaseFunction):
 	def __init__(self, name):
 		super().__init__(name)
+		self.optional_arg_names = []
+		self.optional_arg_values = []
 
-	def execute(self, args):
+	def execute(self, args, optional_arg_names, optional_arg_values):
 		res = RTResult()
 		exec_ctx = self.generate_new_context()
 
 		method_name = f'execute_{self.name}'
 		method = getattr(self, method_name, self.no_visit_method)
 
-		res.register(self.check_and_populate_args(method.arg_names, args, exec_ctx))
+		res.register(self.check_and_populate_args(method.arg_names, [], [], args, exec_ctx))
 		if res.should_return(): return res
 
 		return_value = res.register(method(exec_ctx))
@@ -514,11 +530,47 @@ class BuiltInFunction(BaseFunction):
 				"First argument must be a string",
 				exec_ctx
 			))
+		if not isinstance(str2, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
 		res_str = str1.value + str2.value
 		
 		return RTResult().success(String(res_str))
 	execute_concat.arg_names = ['string1', 'string2']
-	
+
+## Added string split_char function
+
+	def execute_split_char(self, exec_ctx):
+		string = exec_ctx.symbol_table.get('string')
+		char = exec_ctx.symbol_table.get('char')
+		if not isinstance(string, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+		if not isinstance(char, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
+		if len(list(char.value)) > 1:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a single character string",
+				exec_ctx
+			))
+		res_list = (string.value).split(char.value)
+		
+		return RTResult().success(List(res_list))
+	execute_split_char.arg_names = ['string', 'char']
+
+## Add ends
+
 	def execute_set(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 		index = exec_ctx.symbol_table.get('index')
@@ -923,7 +975,7 @@ class BuiltInFunction(BaseFunction):
 				f"Argument must be a number",
 				exec_ctx
 			))
-		fact = 1;
+		fact = 1
 		for i in range(1, number.value + 1):
 			fact = fact*i
 
@@ -934,6 +986,21 @@ class BuiltInFunction(BaseFunction):
 	execute_fact.arg_names = ['number']
 
 
+	def execute_sort(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+		if not isinstance(list_, List):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Argument must be a list",
+				exec_ctx
+			))
+
+		length = len(list_.elements)
+		arr = [list_.elements[i].value for i in range(0,length)]
+
+		return RTResult().success((List(sorted(arr))))
+
+	execute_sort.arg_names = ['list']
 
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
@@ -954,6 +1021,7 @@ BuiltInFunction.to_int 			= 	BuiltInFunction("to_int")
 BuiltInFunction.to_float		= 	BuiltInFunction("to_float")
 BuiltInFunction.imports			= 	BuiltInFunction("imports")
 BuiltInFunction.concat			= 	BuiltInFunction("concat")
+BuiltInFunction.split_char		= 	BuiltInFunction("split_char")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
@@ -961,7 +1029,7 @@ BuiltInFunction.min				= 	BuiltInFunction("min")
 BuiltInFunction.max				= 	BuiltInFunction("max")
 BuiltInFunction.oct				= 	BuiltInFunction("oct")
 BuiltInFunction.fact            =   BuiltInFunction("fact")
-
+BuiltInFunction.sort            =   BuiltInFunction("sort")
 #######################################
 # CONTEXT
 #######################################
@@ -1259,9 +1327,16 @@ class Interpreter:
 
 		body_node = node.body_node
 		arg_names = [arg_name.value for arg_name in node.arg_name_toks]
+		optional_arg_names = [optional_arg.value for optional_arg in node.optional_arg_names]
+		optional_arg_values = []
+
+		for i in node.optional_arg_values:
+			optional_arg_values.append(res.register(self.visit(i, context)))
+			if res.error: return res
+		
 		module = node.module
 
-		func_value = Function(func_name, body_node, arg_names, node.should_auto_return, module).set_context(context).set_pos(node.pos_start, node.pos_end)
+		func_value = Function(func_name, body_node, arg_names, optional_arg_names, optional_arg_values, node.should_auto_return, module).set_context(context).set_pos(node.pos_start, node.pos_end)
 		if node.var_name_tok:
 			context.symbol_table.set(func_name, func_value)
 
@@ -1270,6 +1345,8 @@ class Interpreter:
 	def visit_CallNode(self, node, context):
 		res = RTResult()
 		args = []
+		optional_arg_names = []
+		optional_arg_values = []
 
 		value_to_call = res.register(self.visit(node.node_to_call, context))
 		if res.should_return(): return res
@@ -1279,7 +1356,18 @@ class Interpreter:
 			args.append(res.register(self.visit(arg_node, context)))
 			if res.should_return(): return res
 
-		return_value = res.register(value_to_call.execute(args))
+		optional_names = value_to_call.optional_arg_names
+		for i in range(len(node.optional_arg_names)):
+			if node.optional_arg_names[i].value not in optional_names:
+				return res.failure(errors.RTError(
+					node.pos_start, node.pos_end,
+					f"There is no argument named {node.optional_arg_names[i].var_name_tok.value}",
+					context
+				))
+			optional_arg_names.append(node.optional_arg_names[i].value)
+			optional_arg_values.append(res.register(self.visit(node.optional_arg_values[i], context)))
+
+		return_value = res.register(value_to_call.execute(args, optional_arg_names, optional_arg_values))
 		if res.should_return(): return res
 		return_value = return_value.copy().set_pos(node.pos_start, node.pos_end).set_context(context)
 		return res.success(return_value)
@@ -1326,6 +1414,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("to_int", BuiltInFunction.to_int)
 	global_symbol_table.set("to_float", BuiltInFunction.to_float)
 	global_symbol_table.set("concat", BuiltInFunction.concat)
+	global_symbol_table.set("split_char", BuiltInFunction.split_char)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)

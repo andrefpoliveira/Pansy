@@ -156,6 +156,8 @@ class Parser:
 			res.register_advancement()
 			self.advance()
 			arg_nodes = []
+			optional_arg_name_nodes = []
+			optional_arg_value_nodes = []
 
 			if self.current_tok.type == token.T_RPAREN:
 				res.register_advancement()
@@ -175,6 +177,55 @@ class Parser:
 					arg_nodes.append(res.register(self.expr()))
 					if res.error: return res
 
+				if self.current_tok.type == token.T_EQ:
+					ident = arg_nodes.pop(-1)
+					if type(ident) != nodes.VarAccessNode:
+						return res.failure(errors.InvalidSyntaxError(
+							self.current_tok.pos_start, self.current_tok.pos_end,
+							"Expected an identifier"
+						))
+
+					optional_arg_name_nodes.append(ident.var_name_tok)
+
+					res.register_advancement()
+					self.advance()
+
+					optional_arg_value_nodes.append(res.register(self.expr()))
+					if res.error:
+						return res.failure(errors.InvalidSyntaxError(
+							self.current_tok.pos_start, self.current_tok.pos_end,
+							"Expected int, float, string or boolean"
+						))
+
+					while self.current_tok.type == token.T_COMMA:
+						res.register_advancement()
+						self.advance()
+
+						if self.current_tok.type != token.T_IDENTIFIER:
+							return res.failure(errors.InvalidSyntaxError(
+								self.current_tok.pos_start, self.current_tok.pos_end,
+								f"Expected identifier"
+							))
+
+						optional_arg_name_nodes.append(self.current_tok)
+						res.register_advancement()
+						self.advance()
+
+						if self.current_tok.type != token.T_EQ:
+							return res.failure(errors.InvalidSyntaxError(
+								self.current_tok.pos_start, self.current_tok.pos_end,
+								f"Expected ="
+							))
+
+						res.register_advancement()
+						self.advance()
+
+						value = res.register(self.atom())
+						if res.error: return res
+
+						optional_arg_value_nodes.append(value)
+
+
 				if self.current_tok.type != token.T_RPAREN:
 					return res.failure(errors.InvalidSyntaxError(
 						self.current_tok.pos_start, self.current_tok.pos_end,
@@ -184,7 +235,8 @@ class Parser:
 				res.register_advancement()
 				self.advance()
 
-			return res.success(nodes.CallNode(atom, arg_nodes))
+				
+			return res.success(nodes.CallNode(atom, arg_nodes, optional_arg_name_nodes, optional_arg_value_nodes))
 		return res.success(atom)
 
 
@@ -817,6 +869,8 @@ class Parser:
 		res.register_advancement()
 		self.advance()
 		arg_name_toks = []
+		optional_arg_name_tokens = []
+		optional_arg_values_tokens = []
 
 		if self.current_tok.type == token.T_IDENTIFIER:
 			arg_name_toks.append(self.current_tok)
@@ -836,6 +890,44 @@ class Parser:
 				arg_name_toks.append(self.current_tok)
 				res.register_advancement()
 				self.advance()
+
+			if self.current_tok.type == token.T_EQ:
+				res.register_advancement()
+				self.advance()
+				optional_arg_name_tokens.append(arg_name_toks.pop(-1))
+
+				value = res.register(self.atom())
+				if res.error: return res
+
+				optional_arg_values_tokens.append(value)
+
+				while self.current_tok.type == token.T_COMMA:
+					res.register_advancement()
+					self.advance()
+
+					if self.current_tok.type != token.T_IDENTIFIER:
+						return res.failure(errors.InvalidSyntaxError(
+							self.current_tok.pos_start, self.current_tok.pos_end,
+							f"Expected identifier"
+						))
+
+					optional_arg_name_tokens.append(self.current_tok)
+					res.register_advancement()
+					self.advance()
+
+					if self.current_tok.type != token.T_EQ:
+						return res.failure(errors.InvalidSyntaxError(
+							self.current_tok.pos_start, self.current_tok.pos_end,
+							f"Expected ="
+						))
+
+					res.register_advancement()
+					self.advance()
+
+					value = res.register(self.atom())
+					if res.error: return res
+
+					optional_arg_values_tokens.append(value)	
       
 			if self.current_tok.type != token.T_RPAREN:
 				return res.failure(errors.InvalidSyntaxError(
@@ -863,6 +955,8 @@ class Parser:
 			return res.success(nodes.FunctionDefNode(
 				var_name_tok,
 				arg_name_toks,
+				optional_arg_name_tokens,
+				optional_arg_values_tokens,
 				body,
 				True
 			))
@@ -900,6 +994,8 @@ class Parser:
 		return res.success(nodes.FunctionDefNode(
 			var_name_tok,
 			arg_name_toks,
+			optional_arg_name_tokens,
+			optional_arg_values_tokens,
 			body,
 			False
 		))
