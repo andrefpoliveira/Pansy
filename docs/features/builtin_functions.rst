@@ -23,3 +23,4 @@ List Of Builtin Functions
 - ``to_float(arg)``: Transforms ``arg`` to a float if possible.
 - ``concat(arg1, arg2)``: Performs concatenation of two strings ``arg1`` and ``arg2``.
 - ``split_char(arg1, arg2)``: Splits string ``arg1`` by a given character ``arg2`` and returns a list.
+- ``slice(arg1, arg2, arg3)``: Performs slicing operation on string ``arg1`` at a given start index ``arg2`` and a given end index ``arg3``.
