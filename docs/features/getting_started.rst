@@ -42,19 +42,8 @@ You can also execute your code from outside the Pansy shell:
 
     C:\Users\...\Pansy> pansy.py examples/HelloWorld/code.pansy
 
-Features
-========
-- Assigning variables
-
-.. code-block:: bash
-
-    var x = <value>
-
-- Comments
-
-.. code-block:: bash
-
-    @ This a one line comment
+The basics
+==========
 
 **Data types**
 
@@ -62,10 +51,25 @@ Features
 
     Currently there are 4 data types:
 
-        - Integer
-        - Float
-        - String
-        - List
+        - **Integer**
+        - **Float**
+        - **String**
+        - **List**
+
+**Comments**
+
+.. code-block:: bash
+
+    @ This is a one line comment
+
+    @/ This is a
+       multiple line comment /@
+
+**Assigning variables**
+
+.. code-block:: bash
+
+    var x = <value>
 
 - **Integer**
 
