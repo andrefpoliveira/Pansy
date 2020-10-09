@@ -9,10 +9,10 @@ Welcome to Pansy's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   features/basic_operations
+   features/getting_started
+   features/builtin_functions
    features/logical_statements
    features/functions
-   features/builtin_functions
    developer/Code_Of_Conduct
 
 
