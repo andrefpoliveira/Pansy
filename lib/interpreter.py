@@ -1086,6 +1086,22 @@ class BuiltInFunction(BaseFunction):
 	execute_fact.arg_names = ['number']
 
 
+	def execute_sort(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+		if not isinstance(list_, List):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Argument must be a list",
+				exec_ctx
+			))
+
+		length = len(list_.elements)
+		arr = [list_.elements[i].value for i in range(0,length)]
+
+		return RTResult().success((List(sorted(arr))))
+
+	execute_sort.arg_names = ['list']
+
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
 BuiltInFunction.clear 			=	BuiltInFunction("clear")
@@ -1116,8 +1132,7 @@ BuiltInFunction.min				= 	BuiltInFunction("min")
 BuiltInFunction.max				= 	BuiltInFunction("max")
 BuiltInFunction.oct				= 	BuiltInFunction("oct")
 BuiltInFunction.fact            =   BuiltInFunction("fact")
-
-
+BuiltInFunction.sort            =   BuiltInFunction("sort")
 #######################################
 # CONTEXT
 #######################################
@@ -1514,6 +1529,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("max", BuiltInFunction.max)
 	global_symbol_table.set("oct", BuiltInFunction.oct)
 	global_symbol_table.set("fact", BuiltInFunction.fact)
+	global_symbol_table.set("sort", BuiltInFunction.sort)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()

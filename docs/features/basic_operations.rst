@@ -5,7 +5,7 @@ Quickstart
 1. Install Python 3.6+.
 =======================
 Pansy needs Python to run properly. If you don't have python installed then
-go to [Python](https://www.python.org/downloads/) and install the latest version.
+go to `Python`_ and install the latest version.
 Once you have Python setup, you need to clone this repository and open a terminal inside the folder.
 Then you must type:
 
@@ -110,3 +110,6 @@ You just need to use the command:
     Less than (<)
     Greater than or Equal to (>=)
     Less than or Equal to (<=)
+
+
+.. _`Python`: https://www.python.org/downloads/
