@@ -25,3 +25,4 @@ List Of Builtin Functions
 - ``split_char(arg1, arg2)``: Splits string ``arg1`` by a given character ``arg2`` and returns a list.
 - ``slice(arg1, arg2, arg3)``: Performs slicing operation on string ``arg1`` at a given start index ``arg2`` and a given end index ``arg3``.
 - ``frequency(arg1, arg2)``: Returns frequency of element ``arg2`` in a given string ``arg1``.
+- ``findIndex(arg1, arg2)``: Returns the index of first occurrence of element ``arg2`` in a given string ``arg1``.

@@ -644,6 +644,33 @@ class BuiltInFunction(BaseFunction):
 		return RTResult().success(Number(res_count))
 	execute_frequency.arg_names = ['string', 'char']
 
+	def execute_findIndex(self, exec_ctx):
+		string = exec_ctx.symbol_table.get('string')
+		char = exec_ctx.symbol_table.get('char')
+		if not isinstance(string, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a string",
+				exec_ctx
+			))
+		if not isinstance(char, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
+				exec_ctx
+			))
+		if len(list(char.value)) > 1:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a single character string",
+				exec_ctx
+			))
+
+		res_index = string.value.find(char.value)
+		
+		return RTResult().success(Number(res_index))
+	execute_findIndex.arg_names = ['string', 'char']
+
 	def execute_set(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 		index = exec_ctx.symbol_table.get('index')
@@ -1081,6 +1108,7 @@ BuiltInFunction.concat			= 	BuiltInFunction("concat")
 BuiltInFunction.split_char		= 	BuiltInFunction("split_char")
 BuiltInFunction.slice			= 	BuiltInFunction("slice")
 BuiltInFunction.frequency		= 	BuiltInFunction("frequency")
+BuiltInFunction.findIndex		= 	BuiltInFunction("findIndex")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
@@ -1477,6 +1505,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("split_char", BuiltInFunction.split_char)
 	global_symbol_table.set("slice", BuiltInFunction.slice)
 	global_symbol_table.set("frequency", BuiltInFunction.frequency)
+	global_symbol_table.set("findIndex", BuiltInFunction.findIndex)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)
