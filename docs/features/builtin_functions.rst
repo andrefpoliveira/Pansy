@@ -1,5 +1,5 @@
-Builtin Functions
------------------
+Built-in Functions
+------------------
 
 **Pansy comes with some built-in functions (more on the way 😉). They are listed in alphabetical order**
 
