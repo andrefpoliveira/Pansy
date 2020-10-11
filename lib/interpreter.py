@@ -671,6 +671,34 @@ class BuiltInFunction(BaseFunction):
 		return RTResult().success(Number(res_index))
 	execute_findIndex.arg_names = ['string', 'char']
 
+	def execute_insert(self, exec_ctx):
+		list_ = exec_ctx.symbol_table.get('list')
+		index = exec_ctx.symbol_table.get('index')
+		char = exec_ctx.symbol_table.get('char')
+		if not isinstance(list_, List):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"First argument must be a list",
+				exec_ctx
+			))
+		if not isinstance(index, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a number",
+				exec_ctx
+			))
+		if index.value > len(list_.elements):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be less than length of list",
+				exec_ctx
+			))
+
+		list_.elements.insert(index.value, char.value)
+		
+		return RTResult().success(Number.null)
+	execute_insert.arg_names = ['list', 'index', 'char']
+
 	def execute_set(self, exec_ctx):
 		list_ = exec_ctx.symbol_table.get('list')
 		index = exec_ctx.symbol_table.get('index')
@@ -1125,6 +1153,7 @@ BuiltInFunction.split_char		= 	BuiltInFunction("split_char")
 BuiltInFunction.slice			= 	BuiltInFunction("slice")
 BuiltInFunction.frequency		= 	BuiltInFunction("frequency")
 BuiltInFunction.findIndex		= 	BuiltInFunction("findIndex")
+BuiltInFunction.insert			= 	BuiltInFunction("insert")
 BuiltInFunction.abs				= 	BuiltInFunction("abs")
 BuiltInFunction.has_key			= 	BuiltInFunction("has_key")
 BuiltInFunction.range			= 	BuiltInFunction("range")
@@ -1521,6 +1550,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("slice", BuiltInFunction.slice)
 	global_symbol_table.set("frequency", BuiltInFunction.frequency)
 	global_symbol_table.set("findIndex", BuiltInFunction.findIndex)
+	global_symbol_table.set("insert", BuiltInFunction.insert)
 	global_symbol_table.set("imports", BuiltInFunction.imports)
 	global_symbol_table.set("abs", BuiltInFunction.abs)
 	global_symbol_table.set("has_key", BuiltInFunction.has_key)
