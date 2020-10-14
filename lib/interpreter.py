@@ -1130,6 +1130,41 @@ class BuiltInFunction(BaseFunction):
 
 	execute_sort.arg_names = ['list']
 
+	def execute_is_prime(self, exec_ctx):
+		number = exec_ctx.symbol_table.get('number')
+
+		if not isinstance(number, Number):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a number",
+				exec_ctx
+			))
+
+		is_prime = Number.true
+		if number.value <= 0:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a positive number",
+				exec_ctx
+			))
+		elif number.value == 1:
+			is_prime = Number.false
+		elif number.value == 2 or number.value == 3:
+			is_prime = Number.true
+		elif number.value%2 == 0:
+			is_prime = Number.false
+		elif number.value%3 == 0:
+			is_prime = Number.false
+		else:
+			for i in range(5, int(number.value**(1/2))+1, 6):
+				if  number.value%i == 0 or number.value%(i+2) == 0:
+					is_prime = number.false
+					break
+
+		return RTResult().success(is_prime)
+
+	execute_is_prime.arg_names = ['number']
+
 BuiltInFunction.print 			=	BuiltInFunction("print")
 BuiltInFunction.input 			=	BuiltInFunction("input")
 BuiltInFunction.clear 			=	BuiltInFunction("clear")
@@ -1162,6 +1197,7 @@ BuiltInFunction.max				= 	BuiltInFunction("max")
 BuiltInFunction.oct				= 	BuiltInFunction("oct")
 BuiltInFunction.fact            =   BuiltInFunction("fact")
 BuiltInFunction.sort            =   BuiltInFunction("sort")
+BuiltInFunction.is_prime        =   BuiltInFunction("is_prime")
 #######################################
 # CONTEXT
 #######################################
@@ -1560,6 +1596,7 @@ def reset_global_symbol_table():
 	global_symbol_table.set("oct", BuiltInFunction.oct)
 	global_symbol_table.set("fact", BuiltInFunction.fact)
 	global_symbol_table.set("sort", BuiltInFunction.sort)
+	global_symbol_table.set("is_prime", BuiltInFunction.is_prime)
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
