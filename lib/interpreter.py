@@ -1139,15 +1139,21 @@ class BuiltInFunction(BaseFunction):
 				f"Argument must be a number",
 				exec_ctx
 			))
-
-		is_prime = Number.true
-		if number.value <= 0:
+		elif number.value%1 != 0:
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				f"Argument must be a positive integer",
+				exec_ctx
+			))
+		elif number.value <= 0:
 			return RTResult().failure(errors.RTError(
 				self.pos_start, self.pos_end,
 				f"Argument must be a positive number",
 				exec_ctx
 			))
-		elif number.value == 1:
+
+		is_prime = Number.true
+		if number.value == 1:
 			is_prime = Number.false
 		elif number.value == 2 or number.value == 3:
 			is_prime = Number.true
