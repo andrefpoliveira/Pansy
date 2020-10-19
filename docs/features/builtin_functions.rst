@@ -24,23 +24,23 @@ Built-in Functions
       - `is_function ( )`_
     * - `is_list ( )`_
       - `is_number ( )`_
+      - `is_prime ( )`_
       - `is_string ( )`_
       - `len ( )`_
-      - `max ( )`_
-    * - `min ( )`_
+    * - `max ( )`_
+      - `min ( )`_
       - `oct ( )`_
       - `pop ( )`_
       - `print ( )`_
-      - `range ( )`_
-    * - `run ( )`_
+    * - `range ( )`_
+      - `run ( )`_
       - `set ( )`_
       - `slice ( )`_
       - `sort ( )`_
-      - `split_char ( )`_
-    * - `to_float ( )`_
+    * - `split_char ( )`_
+      - `to_float ( )`_
       - `to_int ( )`_
       - `to_str ( )`_
-      -
       -
 
 abs(*x*)
@@ -190,6 +190,18 @@ Returns *True* if the object given is a number, otherwise, returns *False*.
     @ False
 
     Pansy> is_function(x)
+    @ True
+
+is_prime(*number*)
+==================
+Returns *True* is the *number* given is prime, otherwise, returns *False*.
+
+.. code-block:: bash
+
+    Pansy> print(is_prime(10))
+    @ False
+
+    Pansy> print(is_prime(5))
     @ True
 
 is_string(*object*)
@@ -394,6 +406,7 @@ Return a string constructed from a number *x*.
 .. _`is_function ( )`: #is-function-object
 .. _`is_list ( )`: #is-list-object
 .. _`is_number ( )`: #is-number-object
+.. _`is_prime ( )`: #is-prime-number
 .. _`is_string ( )`: #is-string-object
 .. _`len ( )`: #len-list
 .. _`max ( )`: #max-number1-number2

@@ -42,10 +42,8 @@ You can also execute your code from outside the Pansy shell:
 
     C:\Users\...\Pansy> pansy.py examples/HelloWorld/code.pansy
 
-The basics
+Data types
 ==========
-
-**Data types**
 
 .. note::
 
@@ -55,17 +53,10 @@ The basics
         - **Float**
         - **String**
         - **List**
+        - **Dictionaries**
 
-**Comments**
-
-.. code-block:: bash
-
-    @ This is a one line comment
-
-    @/ This is a
-       multiple line comment /@
-
-**Assigning variables**
+Assigning variables
+===================
 
 .. code-block:: bash
 
@@ -75,51 +66,138 @@ The basics
 
 .. code-block:: bash
 
-    var x = 1
+    var i = 1
 
 
 - **Float**
 
 .. code-block:: bash
 
-    var x = 5.0
+    var f = 5.0
 
 
 - **String**
 
 .. code-block:: bash
 
-    var x = "This is a string"
+    var s = "This is a string"
 
 
 - **List**
 
 .. code-block:: bash
 
-    var x = [1,2,3]
+    var lst = [1,2,3]
 
+- **Dictionaries**
 
-- **Operations**
+.. code-block:: bash
 
-::
+    var dict = {"key": value}
 
-    Sum (+)
-    Subtraction (-)
-    Multiplication (*)
-    Division (/)
-    Int Division (//)
-    Remainder (%)
+Comments
+========
 
-- **Comparators**
+.. code-block:: bash
 
-::
+    @ This is a one line comment
 
-    Equal (==)
-    Inequal (!=)
-    Greater than (>)
-    Less than (<)
-    Greater than or Equal to (>=)
-    Less than or Equal to (<=)
+    @/ This is a
+       multiple line comment /@
+
+Number Operations
+=================
+
+- **Sum**
+
+.. code-block:: bash
+
+    Pansy> 5 + 2
+    @ 7
+
+- **Subtraction**
+
+.. code-block:: bash
+
+    Pansy> 5 - 2
+    @ 3
+
+- **Multiplication**
+
+.. code-block:: bash
+
+    Pansy> 5 * 2
+    @ 10
+
+- **Division**
+
+.. code-block:: bash
+
+    Pansy> 5 / 2
+    @ 2.5
+
+- **Int Division**
+
+.. code-block:: bash
+
+    Pansy> 5 // 2
+    @ 2
+
+- **Remainder**
+
+.. code-block:: bash
+
+    Pansy> 5 % 2
+    @ 1
+
+- **Power**
+
+.. code-block:: bash
+
+    Pansy> 5 ^ 2
+    @ 25
+
+Comparisons
+===========
+
+There are 6 comparisons operators in Pansy. They all have the same priority (which is higher than that of the `Boolean operations`_).
+
+.. list-table::
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Operation
+      - Meeting
+    * - ==
+      - Equal
+    * - !=
+      - Not equal
+    * - <
+      - Strictly less than
+    * - >
+      - Strictly greater than
+    * - <=
+      - Less than or equal
+    * - >=
+      - Greater than or equal
+
+Boolean operators
+=================
+All the boolean operators have the same priority.
+
+.. list-table::
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Operation
+      - Result
+    * - x or y
+      - *if x is false, then y, else x*
+    * - x and y
+      - *if x is false, then x, else y*
+    * - not x
+      - *if x is False, then True, else False*
 
 
 .. _`Python`: https://www.python.org/downloads/
+.. _`Boolean operations`: #boolean-operators
