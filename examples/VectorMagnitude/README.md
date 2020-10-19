@@ -2,7 +2,7 @@
 
 Arguments:
 ```
-Argument #1 - Type: Integer/Float
+Argument #1 - Type: List of Integer/Float
 ```
 
 Returns:
