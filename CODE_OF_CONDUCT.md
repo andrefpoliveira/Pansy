@@ -1,4 +1,4 @@
-# Contributor Covenant Code of Conduct
+# Pansy Code of Conduct
 
 ## Our Pledge
 
