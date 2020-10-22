@@ -1,0 +1,6 @@
+func magnitude(dr) {
+	var magn = ((get(dr, 0) * get(dr, 0)) + (get(dr, 1) * get(dr, 1)) + (get(dr, 2) * get(dr, 2))) ^ 0.5
+	return magn
+}
+
+print(magnitude([6, 8, 0]))
