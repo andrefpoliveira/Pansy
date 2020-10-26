@@ -145,7 +145,7 @@ The functions and variables inside this file can be accessed using the following
 .. code-block:: bash
 
     Pansy> imports("code.pansy", "module")
-    Pansy> module.function()
+    Pansy> module.funct()
 
 
 input()
