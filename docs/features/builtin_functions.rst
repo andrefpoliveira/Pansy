@@ -408,7 +408,7 @@ Return a string constructed from a number *x*.
 .. _`frequency ( )`: #frequency-string-c
 .. _`get ( )`: #get-list-x
 .. _`has_key ( )`: #has-key-dict-key
-.. _`imports ( )`: #imports-path
+.. _`imports ( )`: #imports-path-name
 .. _`input ( )`: #input
 .. _`is_function ( )`: #is-function-object
 .. _`is_list ( )`: #is-list-object
