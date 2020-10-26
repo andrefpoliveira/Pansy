@@ -37,10 +37,13 @@ class DictNode:
 		self.pos_end = pos_end
 
 class VarAccessNode:
-	def __init__(self, var_name_tok):
+	def __init__(self, var_name_tok, module_tok):
 		self.var_name_tok = var_name_tok
+		self.module_tok = module_tok
 
 		self.pos_start = self.var_name_tok.pos_start
+		if module_tok:
+			self.pos_start = self.module_tok.pos_start
 		self.pos_end = self.var_name_tok.pos_end
 
 class VarAssignNode:

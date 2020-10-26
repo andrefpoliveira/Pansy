@@ -30,6 +30,7 @@ T_LTE			= 'LTE'
 T_COMMA			= 'COMMA'
 T_COLON			= 'COLON'
 T_ARROW			= 'ARROW'
+T_DOT			= 'DOT'
 T_NEWLINE		= 'NEWLINE'
 T_EOF	   		= 'EOF'
 

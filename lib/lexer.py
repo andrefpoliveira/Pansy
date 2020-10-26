@@ -101,6 +101,9 @@ class Lexer:
 			elif self.current_char == ',':
 				tokens.append(token.Token(token.T_COMMA, pos_start=self.pos))
 				self.advance()
+			elif self.current_char == '.':
+				tokens.append(token.Token(token.T_DOT, pos_start=self.pos))
+				self.advance()
 			elif self.current_char == '!':
 				tok, error = self.make_not_equals()
 				if error: return [], error

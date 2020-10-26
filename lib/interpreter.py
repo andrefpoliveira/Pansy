@@ -865,26 +865,37 @@ class BuiltInFunction(BaseFunction):
 
 	def execute_imports(self, exec_ctx):
 		path = exec_ctx.symbol_table.get('path')
+		name = exec_ctx.symbol_table.get('name')
 
 		if not isinstance(path, String):
 			return RTResult().failure(errors.RTError(
 				self.pos_start, self.pos_end,
-				"Argument must be a string",
+				"First argument must be a string",
+				exec_ctx
+			))
+
+		if not isinstance(name, String):
+			return RTResult().failure(errors.RTError(
+				self.pos_start, self.pos_end,
+				"Second argument must be a string",
 				exec_ctx
 			))
 
 		exec_ctx.symbol_table.set('fn', path)
-		self.execute_run(exec_ctx, importFile=True)
+		self.execute_run(exec_ctx, importFile=True, module_name = name.value)
 
 		return RTResult().success(Number.null)
 
-	execute_imports.arg_names = ['path']
+	execute_imports.arg_names = ['path', 'name']
 
-	def execute_run(self, exec_ctx, importFile=False):
+	def execute_run(self, exec_ctx, importFile=False, module_name=""):
 		global global_symbol_table
 
 		if not importFile:
 			global_symbol_table = reset_global_symbol_table()
+		else:
+			new_symbol_table = SymbolTable(parent=None, name = module_name)
+			modules_symbol_table.append(new_symbol_table)
 
 		fn = exec_ctx.symbol_table.get('fn')
 
@@ -916,7 +927,7 @@ class BuiltInFunction(BaseFunction):
 				exec_ctx
 			))
 
-		_, error = run(fn, script)
+		_, error = run(fn, script, module_name)
 
 		if error:
 			return RTResult().failure(errors.RTError(
@@ -1220,9 +1231,10 @@ class Context:
 #######################################
 
 class SymbolTable:
-	def __init__(self, parent=None):
+	def __init__(self, parent=None, name=None):
 		self.symbols = {}
 		self.parent = parent
+		self.name = name
 
 	def get(self, name):
 		value = self.symbols.get(name, None)
@@ -1235,6 +1247,9 @@ class SymbolTable:
 
 	def remove(self, name):
 		del self.symbols[name]
+
+	def __str__(self):
+		return str(self.symbols)
 
 #######################################
 # INTERPRETER
@@ -1288,7 +1303,21 @@ class Interpreter:
 	def visit_VarAccessNode(self, node, context):
 		res = RTResult()
 		var_name = node.var_name_tok.value
-		value = context.symbol_table.get(var_name)
+		var_module_name = node.module_tok.value if node.module_tok else None
+
+		if var_module_name:
+			symbol_table = find_symbol_table(var_module_name)
+
+			if not symbol_table:
+				return res.failure(errors.RTError(
+					node.pos_start, node.pos_end,
+					f"'{var_module_name}' module is not defined",
+					context
+				))
+
+			value = symbol_table.get(var_name)
+		else:
+			value = context.symbol_table.get(var_name)
 
 		if not value:
 			return res.failure(errors.RTError(
@@ -1606,11 +1635,17 @@ def reset_global_symbol_table():
 	return global_symbol_table
 
 global_symbol_table = reset_global_symbol_table()
+modules_symbol_table = []
+
+def find_symbol_table(name):
+	for table in modules_symbol_table:
+		if table.name == name: return table
+	return None
 
 #####################
 # RUN
 #####################
-def run(fn, text):
+def run(fn, text, module_name=""):
 	# Generate tokens
 	lex = lexer.Lexer(fn, text)
 	tokens, error = lex.make_tokens()
@@ -1623,7 +1658,10 @@ def run(fn, text):
 
 	inter = Interpreter()
 	context = Context('<program>')
-	context.symbol_table = global_symbol_table
+	if not module_name:
+		context.symbol_table = global_symbol_table
+	else:
+		context.symbol_table = find_symbol_table(module_name)
 	result = inter.visit(ast.node, context)
 
 	return result.value, result.error

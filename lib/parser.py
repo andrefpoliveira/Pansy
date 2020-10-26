@@ -255,9 +255,26 @@ class Parser:
 			return res.success(nodes.StringNode(tok))
 
 		elif tok.type == token.T_IDENTIFIER:
+			module = None
+			identifier = self.current_tok
 			res.register_advancement()
 			self.advance()
-			return res.success(nodes.VarAccessNode(tok))
+
+			if self.current_tok.type == token.T_DOT:
+				res.register_advancement()
+				self.advance()
+				if self.current_tok.type != token.T_IDENTIFIER:
+					return res.failure(errors.InvalidSyntaxError(
+						self.current_tok.pos_start, self.current_tok.pos_end,
+						"Expected an identifier"
+					))
+				
+				module = identifier
+				identifier = self.current_tok
+
+				res.register_advancement()
+				self.advance()
+			return res.success(nodes.VarAccessNode(identifier, module))
 
 		elif tok.type == token.T_LPAREN:
 			res.register_advancement()
@@ -638,7 +655,7 @@ class Parser:
 					res.register_advancement()
 					self.advance()
 				else:
-					return res.failure(InvalidSyntaxError(
+					return res.failure(errors.InvalidSyntaxError(
 						self.current_tok.pos_start, self.current_tok.pos_end,
 						"Expected 'end'"
 					))
