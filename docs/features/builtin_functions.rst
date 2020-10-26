@@ -132,13 +132,20 @@ Returns *True* if the dictionary has the key given, otherwise, returns *False*.
     Pansy> has_key(d, "age")
     @ False
 
-imports(*path*)
-===============
+imports(*path*, *name*)
+=======================
 Returns nothing. Imports the functions and variables found on another file with the extension **.pansy**.
 
 .. code-block:: bash
 
     Pansy> imports("examples/HelloWorld/code.pansy")
+
+The functions and variables inside this file can be accessed using the following syntax:
+
+.. code-block:: bash
+
+    Pansy> imports("code.pansy", "module")
+    Pansy> module.function()
 
 
 input()
