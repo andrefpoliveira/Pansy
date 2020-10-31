@@ -1,0 +1,9 @@
+func minutesToSeconds(minutes){
+    var seconds = 60
+    var minToSec = (minutes * seconds)
+    print(minToSec)
+}
+
+minutesToSeconds(0)
+minutesToSeconds(30)
+minutesToSeconds(90)
