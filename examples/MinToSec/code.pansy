@@ -1,7 +1,6 @@
 func minutesToSeconds(minutes){
-    var seconds = 60
-    var minToSec = (minutes * seconds)
-    print(minToSec)
+var seconds = minutes * 60
+print(seconds)
 }
 
 minutesToSeconds(0)
