@@ -20,7 +20,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'Pansy'
-copyright = '2020, Pansy'
+copyright = '2022, Pansy'
 author = 'Pansy'
 
 # The full version, including alpha/beta/rc tags
