@@ -1,3 +1,11 @@
+<h2 align="center">
+  ⚠️ Archived ⚠️
+</h2>
+
+<p align="center">
+  This repository is no longer being maintained.
+</p>
+
 <p align="center">
   <img width="30%" height="30%" src="images/Pansy.png">
 </p>
